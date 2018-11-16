@@ -2,4 +2,7 @@
     <string name="app_name">CInLocation</string>
     <string name="editar">Editar</string>
     <string name="title">Title</string>
+    <string name="search">Pesquisar</string>
+    <string name="add">Adicionar</string>
+    <string name="home">Home</string>
 </resources>
