@@ -26,9 +26,6 @@ class Adapter (val mData: List<Item>?) : RecyclerView.Adapter<Adapter.myViewHold
         holder.backgroundImage?.setImageResource(mData?.get(position)!!.background)
         holder.title?.setText(mData?.get(position)!!.title)
         holder.location?.setText(mData?.get(position)!!.location)
-        holder.edit?.setOnClickListener {
-            holder.itemClick()
-        }
 
     }
 
@@ -38,25 +35,25 @@ class Adapter (val mData: List<Item>?) : RecyclerView.Adapter<Adapter.myViewHold
         return 0
     }
 
-    inner class myViewHolder(itemView: View, val context: Context) : RecyclerView.ViewHolder(itemView) {
+    inner class myViewHolder(itemView: View, val context: Context) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+
         var backgroundImage: ImageView? = null
         var title: TextView? = null
         var location: TextView? = null
-        var edit: Button? = null
 
 
         init {
             title = itemView.findViewById(R.id.card_title)
             location = itemView.findViewById(R.id.card_location)
             backgroundImage = itemView.findViewById(R.id.card_background)
-            edit = itemView.findViewById(R.id.btn_edit)
+            itemView.setOnClickListener(this)
 
         }
 
-
-        fun itemClick() {
+        override fun onClick(p0: View?) {
             Toast.makeText(context,"${title?.text}",Toast.LENGTH_SHORT).show()
         }
+
 
 
     }

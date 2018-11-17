@@ -2,37 +2,78 @@ package com.wehack.cinlocation
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import android.support.design.widget.BottomNavigationView
+import android.support.v4.app.Fragment
+import android.support.v7.widget.Toolbar
 import android.util.Log
-import android.view.Window
-import android.view.WindowManager
-import android.widget.LinearLayout
+import android.view.Menu
+import android.view.MenuItem
 
-class MainActivity : AppCompatActivity() {
+import android.widget.Toast
+import fragments.AddFragment
+import fragments.HomeFragment
+import fragments.SearchFragment
+import kotlinx.android.synthetic.main.activity_main.*
+
+class MainActivity : AppCompatActivity(),
+        BottomNavigationView.OnNavigationItemSelectedListener,
+        BottomNavigationView.OnNavigationItemReselectedListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //Status bar transparente
-        val w: Window = getWindow()
-        w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+        //Toolbar do projeto
+        val toolbar: Toolbar = findViewById(R.id.main_toolbar)
+        setSupportActionBar(toolbar)
 
-        val mList: ArrayList<Item>? = ArrayList()
-        mList?.add(Item(R.drawable.biblioteca_ufpe, "Pegar livro de matemática", "BC UFPE"))
-        mList?.add(Item(R.drawable.cin_ufpe, "Primeiro acompanhamento android", "CIn UFPE"))
-        mList?.add(Item(R.drawable.riomar, "Comprar celular", "Rio Mar"))
-        mList?.add(Item(R.drawable.marco_zero, "Passar na InLoco", "Marco Zero"))
-        mList?.add(Item(R.drawable.conde_boa_vista, "Tirar o VEM", "Conde da BV"))
+        //BottomNav do projeto
+        bottom_nav.setOnNavigationItemSelectedListener(this)
 
-        Log.e("mList",mList?.get(0)?.title)
-        val adapter = Adapter(mList)
+        //Status bar transparente (tá bugando o toolbar, deixar off)
+        //val w: Window = getWindow()
+        //w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
 
-        val recyclerView: RecyclerView = findViewById(R.id.rv_list)
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(this)
+
+        //Ao começar o App, a aplicação deverá startar no fragment principal
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, HomeFragment()).commit()
 
     }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_toolbar, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        val id = item?.itemId
+
+        if (id == R.id.profile_id)
+            Toast.makeText(this, "Profile", Toast.LENGTH_SHORT).show()
+
+        return super.onOptionsItemSelected(item)
+    }
+
+    //Bons padroes idicam que aqui deve ser implementado a funcao de atualizar a lista
+    override fun onNavigationItemReselected(item: MenuItem) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+
+        //Seleciona o fragmento de tela que o usuário selecionou no navBottom
+        val fragment: Fragment = when (id) {
+            R.id.nav_home -> HomeFragment()
+            R.id.nav_add -> AddFragment()
+            R.id.nav_search -> SearchFragment()
+            else -> HomeFragment()
+        }
+
+
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment).commit()
+        return true
+    }
+
 
 }

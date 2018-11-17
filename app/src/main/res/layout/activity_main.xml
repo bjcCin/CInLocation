@@ -8,13 +8,21 @@
     tools:context=".MainActivity"
     >
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_list"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/main_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        app:titleTextAppearance="@style/ActionBarTitle"
+        />
+    
+    <FrameLayout
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_above="@+id/bottom_nav"/>
+        android:layout_above="@id/bottom_nav"
+        android:layout_below="@id/main_toolbar"/>
+
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/bottom_nav"
@@ -27,6 +35,7 @@
         app:itemIconTint="@drawable/bottom_item_color"
         app:menu="@menu/menu_botton_nav"
         />
+
 
 
 
