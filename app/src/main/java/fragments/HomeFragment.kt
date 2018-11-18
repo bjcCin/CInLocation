@@ -15,6 +15,8 @@ import kotlinx.android.synthetic.main.fragment_home.*
 
 class HomeFragment : Fragment() {
 
+    var adapter: Adapter? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         val inflate = inflater.inflate(R.layout.fragment_home,container, false)!!
@@ -26,13 +28,18 @@ class HomeFragment : Fragment() {
         mList?.add(Item(R.drawable.marco_zero, "Passar na InLoco", "Marco Zero"))
         mList?.add(Item(R.drawable.conde_boa_vista, "Tirar o VEM", "Conde da BV"))
 
-        val adapter = Adapter(mList)
+        adapter = Adapter(mList)
 
         val recyclerView: RecyclerView = inflate.findViewById(R.id.rv_list)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context)
 
         return inflate
+    }
+
+    fun makeQuery(query: String){
+        adapter?.getFilter()?.filter(query)
+
     }
 
 

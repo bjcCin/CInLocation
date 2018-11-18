@@ -7,12 +7,16 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 
-class Adapter (val mData: List<Item>?) : RecyclerView.Adapter<Adapter.myViewHolder>() {
+class Adapter (val mData: List<Item>?) : RecyclerView.Adapter<Adapter.myViewHolder>(), Filterable  {
+
+    var mDataFiltered: List<Item>? = null
+
+    init {
+        mDataFiltered = mData
+    }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): myViewHolder? {
 
@@ -23,16 +27,49 @@ class Adapter (val mData: List<Item>?) : RecyclerView.Adapter<Adapter.myViewHold
     }
 
     override fun onBindViewHolder(holder: myViewHolder, position: Int) {
-        holder.backgroundImage?.setImageResource(mData?.get(position)!!.background)
-        holder.title?.setText(mData?.get(position)!!.title)
-        holder.location?.setText(mData?.get(position)!!.location)
+        holder.backgroundImage?.setImageResource(mDataFiltered?.get(position)!!.background)
+        holder.title?.setText(mDataFiltered?.get(position)!!.title)
+        holder.location?.setText(mDataFiltered?.get(position)!!.location)
 
     }
 
     override fun getItemCount(): Int {
-        if (mData != null)
-            return mData.size
+        if (mDataFiltered != null)
+            return mDataFiltered!!.size
         return 0
+    }
+
+    override fun getFilter(): Filter {
+
+       return object : Filter(){
+           override fun performFiltering(p0: CharSequence?): FilterResults {
+               val charString = p0.toString()
+               if(charString.isEmpty())
+                   mDataFiltered = mData
+               else{
+                   val filteredList: ArrayList<Item> = ArrayList()
+                   if (mData != null) {
+                       for(row in mData){
+                           if(row.title.toLowerCase().contains(charString.toLowerCase()))
+                               filteredList.add(row)
+                       }
+                   }
+                   mDataFiltered = filteredList
+               }
+
+               val filterResults =  Filter.FilterResults()
+               filterResults.values = mDataFiltered
+               return filterResults
+
+           }
+
+           override fun publishResults(p0: CharSequence?, p1: FilterResults?) {
+               mDataFiltered = p1?.values as ArrayList<Item>
+               notifyDataSetChanged()
+           }
+
+       }
+
     }
 
     inner class myViewHolder(itemView: View, val context: Context) : RecyclerView.ViewHolder(itemView), View.OnClickListener {

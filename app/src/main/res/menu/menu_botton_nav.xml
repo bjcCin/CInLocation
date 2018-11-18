@@ -11,8 +11,8 @@
             android:icon="@drawable/baseline_add_circle_outline_24"
             android:title="@string/add" />
         <item
-            android:id="@+id/nav_search"
-            android:icon="@drawable/baseline_search_24"
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/account"
             android:title="@string/search" />
 
     </group>

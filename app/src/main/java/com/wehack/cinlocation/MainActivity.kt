@@ -5,26 +5,39 @@ import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.Fragment
 import android.support.v7.widget.Toolbar
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 
 import android.widget.Toast
 import fragments.AddFragment
 import fragments.HomeFragment
-import fragments.SearchFragment
+import fragments.ProfileFragment
 import kotlinx.android.synthetic.main.activity_main.*
+import android.app.SearchManager
+import android.content.Context
+import android.support.v7.widget.SearchView
+import com.wehack.cinlocation.R.id.action_search
+
 
 class MainActivity : AppCompatActivity(),
         BottomNavigationView.OnNavigationItemSelectedListener,
         BottomNavigationView.OnNavigationItemReselectedListener {
+
+    private var searchView: SearchView? = null
+    private var fragment_home = HomeFragment()
+    private var fragment_profile = ProfileFragment()
+    private var fragment_add = AddFragment()
+    private var toolbar: Toolbar? = null
+    private var searchMenuItem: MenuItem? = null
+    private var menuToolbar: Menu? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         //Toolbar do projeto
-        val toolbar: Toolbar = findViewById(R.id.main_toolbar)
+        toolbar = findViewById(R.id.main_toolbar)
         setSupportActionBar(toolbar)
 
         //BottomNav do projeto
@@ -36,20 +49,46 @@ class MainActivity : AppCompatActivity(),
 
 
         //Ao começar o App, a aplicação deverá startar no fragment principal
-        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, HomeFragment()).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment_home).commit()
 
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_toolbar, menu)
-        return super.onCreateOptionsMenu(menu)
+        menuToolbar = menu
+        searchMenuItem = menuToolbar?.findItem(action_search)
+
+        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        searchView = menu?.findItem(R.id.action_search)?.actionView as SearchView
+        searchView!!.setSearchableInfo(searchManager.getSearchableInfo(componentName))
+        searchView!!.setMaxWidth(Integer.MAX_VALUE)
+
+        // query text changes
+        searchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                // query submit
+                fragment_home.makeQuery(query)
+                return false
+            }
+
+            override fun onQueryTextChange(query: String): Boolean {
+                // query change
+                fragment_home.makeQuery(query)
+                return false
+            }
+        })
+
+        return true
     }
+
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         val id = item?.itemId
 
-        if (id == R.id.profile_id)
+        if (id == R.id.action_search){
             Toast.makeText(this, "Profile", Toast.LENGTH_SHORT).show()
+            return true
+        }
 
         return super.onOptionsItemSelected(item)
     }
@@ -61,15 +100,21 @@ class MainActivity : AppCompatActivity(),
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
+        item.setVisible(false)
 
         //Seleciona o fragmento de tela que o usuário selecionou no navBottom
         val fragment: Fragment = when (id) {
-            R.id.nav_home -> HomeFragment()
-            R.id.nav_add -> AddFragment()
-            R.id.nav_search -> SearchFragment()
+            R.id.nav_home -> fragment_home
+            R.id.nav_add -> fragment_add
+            R.id.nav_profile -> fragment_profile
             else -> HomeFragment()
         }
 
+
+        if(id == R.id.nav_add  || id == R.id.nav_profile)
+            searchMenuItem?.setVisible(false)
+        else
+            searchMenuItem?.setVisible(true)
 
         supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment).commit()
         return true
