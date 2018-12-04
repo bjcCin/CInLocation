@@ -1,9 +1,7 @@
 package com.wehack.cinlocation
 
 import android.content.Context
-import android.hardware.camera2.TotalCaptureResult
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +16,7 @@ class Adapter (val mData: List<Item>?) : RecyclerView.Adapter<Adapter.myViewHold
     }
 
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): myViewHolder? {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): myViewHolder {
 
         val inflater: LayoutInflater = LayoutInflater.from(parent.context)
         val v: View = inflater.inflate(R.layout.card_item, parent, false)
