@@ -63,16 +63,16 @@ class MainActivity : AppCompatActivity(),
         searchView!!.setSearchableInfo(searchManager.getSearchableInfo(componentName))
         searchView!!.setMaxWidth(Integer.MAX_VALUE)
 
-        // query text changes
+        // mudança de texto da query
         searchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                // query submit
+                // envio da consulta
                 fragment_home.makeQuery(query)
                 return false
             }
 
             override fun onQueryTextChange(query: String): Boolean {
-                // query change
+                // mudanca do texto
                 fragment_home.makeQuery(query)
                 return false
             }
