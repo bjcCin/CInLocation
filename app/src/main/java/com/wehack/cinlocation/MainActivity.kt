@@ -15,6 +15,9 @@ import fragments.ProfileFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import android.app.SearchManager
 import android.content.Context
+import android.content.pm.PackageManager
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.SearchView
 import com.wehack.cinlocation.R.id.action_search
 
@@ -22,6 +25,11 @@ import com.wehack.cinlocation.R.id.action_search
 class MainActivity : AppCompatActivity(),
         BottomNavigationView.OnNavigationItemSelectedListener,
         BottomNavigationView.OnNavigationItemReselectedListener {
+
+    companion object {
+        val CURRENT_LOCATION_REQUEST_CODE = 42
+        var locationPermissionGranted = false
+    }
 
     private var searchView: SearchView? = null
     private var fragment_home = HomeFragment()
@@ -50,7 +58,18 @@ class MainActivity : AppCompatActivity(),
 
         //Ao começar o App, a aplicação deverá startar no fragment principal
         supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment_home).commit()
+        checkLocationPermission()
+    }
 
+    private fun checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(
+                        this,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                    CURRENT_LOCATION_REQUEST_CODE)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -79,6 +98,15 @@ class MainActivity : AppCompatActivity(),
         })
 
         return true
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        when (requestCode) {
+            CURRENT_LOCATION_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults.first() == PackageManager.PERMISSION_GRANTED)
+                    locationPermissionGranted = true
+            }
+        }
     }
 
 

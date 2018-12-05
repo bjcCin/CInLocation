@@ -11,7 +11,12 @@ import android.view.ViewGroup
 import com.wehack.cinlocation.Adapter
 import com.wehack.cinlocation.Item
 import com.wehack.cinlocation.R
+import com.wehack.cinlocation.database.ReminderDatabase
+import com.wehack.cinlocation.model.Reminder
+
 import kotlinx.android.synthetic.main.fragment_home.*
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
 
 class HomeFragment : Fragment() {
 
@@ -28,11 +33,38 @@ class HomeFragment : Fragment() {
         mList?.add(Item(R.drawable.marco_zero, "Passar na InLoco", "Marco Zero"))
         mList?.add(Item(R.drawable.conde_boa_vista, "Tirar o VEM", "Conde da BV"))
 
-        adapter = Adapter(mList)
+        val remText = "This is indeed a test"
+        val rem = Reminder(text = remText, title = "Hello")
 
-        val recyclerView: RecyclerView = inflate.findViewById(R.id.rv_list)
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(context)
+        var reminderList: List<Reminder>? = ArrayList()
+        doAsync {
+            val dao = ReminderDatabase.getInstance(context!!)?.reminderDao()
+//            val mRemId = dao?.insert(rem)
+//            if (mRemId != null) {
+//                val mRem = dao.findById(mRemId)
+//                assert(mRem.text == remText)
+//            } else {
+//                assert(false)
+//            }
+            var long: Long = 3
+            var reminder: Reminder = dao?.findById(long)!!
+            reminderList = dao.getAll()
+
+            uiThread {
+                //Log.e("reminder", reminder.title)
+                //Log.e("id", "${mRemId}")
+                adapter = Adapter(reminderList)
+                val recyclerView: RecyclerView = inflate.findViewById(R.id.rv_list)
+                recyclerView.adapter = adapter
+                recyclerView.layoutManager = LinearLayoutManager(context)
+            }
+
+        }
+
+
+
+
+
 
         return inflate
     }

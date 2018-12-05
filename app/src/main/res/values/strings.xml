@@ -5,4 +5,9 @@
     <string name="search">Pesquisar</string>
     <string name="add">Adicionar</string>
     <string name="home">Home</string>
+    <string name="google_maps_api_key">AIzaSyBEUjPfB-keXG1jgQ3Cn-vZtmjcjQ6dLSI</string>
+    <string name="t_tulo_do_lembrete">Título do Lembrete</string>
+    <string name="escreva_seu_lembrete">Escreva seu lembrete</string>
+    <string name="data_inicial">Data inicial</string>
+    <string name="data_final">Data final</string>
 </resources>
