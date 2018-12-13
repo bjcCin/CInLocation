@@ -33,13 +33,13 @@ class HomeFragment : Fragment() {
         mList?.add(Item(R.drawable.marco_zero, "Passar na InLoco", "Marco Zero"))
         mList?.add(Item(R.drawable.conde_boa_vista, "Tirar o VEM", "Conde da BV"))
 
-        val remText = "This is indeed a test"
-        val rem = Reminder(text = remText, title = "Hello")
+        val remText = "Shopping"
+        val rem = Reminder(text = remText, title = "Comprar Celular")
 
         var reminderList: List<Reminder>? = ArrayList()
         doAsync {
             val dao = ReminderDatabase.getInstance(context!!)?.reminderDao()
-//            val mRemId = dao?.insert(rem)
+           // val mRemId = dao?.insert(rem)
 //            if (mRemId != null) {
 //                val mRem = dao.findById(mRemId)
 //                assert(mRem.text == remText)
@@ -47,8 +47,8 @@ class HomeFragment : Fragment() {
 //                assert(false)
 //            }
             var long: Long = 3
-            var reminder: Reminder = dao?.findById(long)!!
-            reminderList = dao.getAll()
+//            var reminder: Reminder = dao?.findById(long)!!
+            reminderList = dao?.getAll()
 
             uiThread {
                 //Log.e("reminder", reminder.title)

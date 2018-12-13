@@ -9,7 +9,7 @@ import com.wehack.cinlocation.database.dao.Converters
 import com.wehack.cinlocation.database.dao.ReminderDao
 import com.wehack.cinlocation.model.Reminder
 
-@Database(entities = [Reminder::class], version = 3)
+@Database(entities = [Reminder::class], version = 4)
 @TypeConverters(Converters::class)
 abstract class ReminderDatabase : RoomDatabase() {
     abstract fun reminderDao(): ReminderDao

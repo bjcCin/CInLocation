@@ -13,4 +13,5 @@ data class Reminder(
         var lon: Double? = 0.0 ,
         var beginDate: Date? = null,
         var endDate: Date? = null,
-        var completed: Boolean = false)
+        var completed: Boolean = false,
+        var image: String = "")

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout android:id="@+id/newReminderFragment"
+<android.support.design.widget.CoordinatorLayout xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/newReminderFragment"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -22,15 +23,15 @@
             app:contentScrim="?attr/colorPrimary"
             app:expandedTitleMarginEnd="64dp"
             app:expandedTitleMarginStart="48dp"
+            app:expandedTitleTextAppearance="@style/CollapsingToolbarLayoutExpandedTextStyle"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            android:theme="@style/AppTheme.CollaptionBar"
             >
             
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
                 android:fitsSystemWindows="true"
-                android:src="@drawable/marco_zero"
+                android:src="@drawable/sem_foto"
                 android:scaleType="centerCrop"
                 app:layout_collapseMode="parallax"
                 android:contentDescription="Marco Zero"/>
@@ -41,22 +42,131 @@
                 android:layout_height="?attr/actionBarSize"
                 android:id="@+id/addToolbar"
                 app:layout_collapseMode="pin"
-                app:title="Olaa"/>
+                app:title="Novo lembrete"/>
             
         </android.support.design.widget.CollapsingToolbarLayout>
 
 
-
-
     </android.support.design.widget.AppBarLayout>
 
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/addNestedScroll"
+        android:fillViewport="true"
+        android:padding="8dp"
+        android:layout_marginBottom="20dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    >
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="22dp">
+
+                        <android.support.v7.widget.AppCompatEditText
+                            android:layout_width="match_parent"
+                            android:hint="@string/titulo_do_lembrete"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/add_reminderTittle"/>
+
+                    </android.support.design.widget.TextInputLayout>
 
 
-    <!--<fragment-->
-        <!--android:id="@+id/newReminderMap"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="250dp"-->
-        <!--android:name="com.google.android.gms.maps.SupportMapFragment"-->
-        <!--/>-->
+                    <EditText
+                        android:inputType="textLongMessage"
+                        android:background="@drawable/edit_text_background"
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp"
+                        android:hint="@string/escreva_seu_lembrete"
+                        android:gravity="top"
+                        android:layout_marginTop="22dp"
+                        android:padding="10dp"
+                        android:id="@+id/add_reminderText"
+                        app:layout_constraintTop_toTopOf="parent"
+                        />
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="22dp"
+                        >
+
+                        <com.vicmikhailau.maskededittext.MaskedEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/data_inicial"
+                            android:ems="10"
+                            app:mask="##/##/####"
+                            android:inputType="date"
+                            android:id="@+id/addDateS_textInputLayout"/>
+
+                    </android.support.design.widget.TextInputLayout>
+
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="22dp"
+                        >
+
+                        <com.vicmikhailau.maskededittext.MaskedEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/data_final"
+                            android:ems="10"
+                            app:mask="##/##/####"
+                            android:inputType="date"
+                            android:id="@+id/addDateE_textInputLayout"/>
+
+                    </android.support.design.widget.TextInputLayout>
+
+
+                    <!--<fragment-->
+                        <!--android:layout_marginTop="22dp"-->
+                        <!--android:id="@+id/newReminderMap"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="250dp"-->
+                        <!--android:name="com.google.android.gms.maps.SupportMapFragment"-->
+                        <!--/>-->
+
+                    <FrameLayout
+                        android:id="@+id/addMap"
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp"
+                        android:layout_marginTop="22dp"/>
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/addCadastro"
+                        android:text="@string/cadastrar"
+                        android:layout_gravity="bottom|center_horizontal"
+                        android:layout_marginTop="22dp"
+
+                        />
+
+                </LinearLayout>
+
+
+
+            </android.support.v4.widget.NestedScrollView>
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/viewFloatBtn"
+        app:fabSize="normal"
+        app:layout_anchor="@id/addAppBarLayout"
+        app:layout_anchorGravity="bottom|end"
+        android:layout_margin="6dp"
+        android:src="@drawable/pencil"/>
+
+
 
 </android.support.design.widget.CoordinatorLayout>
