@@ -9,14 +9,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import com.wehack.cinlocation.model.Reminder
+import java.util.*
 
 class Adapter (val mData: List<Reminder>?) : RecyclerView.Adapter<Adapter.myViewHolder>(), Filterable  {
 
     var mDataFiltered: List<Reminder>? = null
+    var imagens: ArrayList<Int> = ArrayList()
+
 
     init {
         mDataFiltered = mData
+        imagens.add(R.drawable.biblioteca_ufpe)
+        imagens.add(R.drawable.cin_ufpe)
+        imagens.add(R.drawable.conde_boa_vista)
+        imagens.add(R.drawable.marco_zero)
+
     }
+
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): myViewHolder {
@@ -28,9 +37,13 @@ class Adapter (val mData: List<Reminder>?) : RecyclerView.Adapter<Adapter.myView
     }
 
     override fun onBindViewHolder(holder: myViewHolder, position: Int) {
-        holder.backgroundImage?.setImageResource(R.drawable.biblioteca_ufpe)
+        val random: Random = Random()
+        val x: Int = random.nextInt(3)
+        val selectedImagem = imagens.get(x)
+
+        holder.backgroundImage?.setImageResource(selectedImagem)
         holder.title?.setText(mDataFiltered?.get(position)!!.title)
-        holder.location?.setText(mDataFiltered?.get(position)!!.title)
+        holder.location?.setText(mDataFiltered?.get(position)!!.text)
 
     }
 
@@ -78,8 +91,6 @@ class Adapter (val mData: List<Reminder>?) : RecyclerView.Adapter<Adapter.myView
         var backgroundImage: ImageView? = null
         var title: TextView? = null
         var location: TextView? = null
-        var selectedItem: Item? = null
-
 
         init {
             title = itemView.findViewById(R.id.card_title)
@@ -90,13 +101,14 @@ class Adapter (val mData: List<Reminder>?) : RecyclerView.Adapter<Adapter.myView
         }
 
         override fun onClick(p0: View?) {
-            selectedItem = Item(R.id.card_background, title?.text.toString(), location?.text.toString())
-            val myIntent = Intent(context, EditScreen::class.java)
-            myIntent.putExtra("itemId", "ItemID")
-            context.startActivity(myIntent)
+            val pos = adapterPosition
+            if(pos != RecyclerView.NO_POSITION){
+                val myIntent = Intent(context, EditScreen::class.java)
+                myIntent.putExtra("itemId", mDataFiltered?.get(pos)?.id)
+                context.startActivity(myIntent)
+            } else
+                Toast.makeText(context, "Erro ao abrir o arquivo", Toast.LENGTH_SHORT).show()
         }
-
-
 
     }
 }

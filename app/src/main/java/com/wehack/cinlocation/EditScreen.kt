@@ -1,15 +1,39 @@
 package com.wehack.cinlocation
 
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.app.Fragment
+import android.content.Intent
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.AppCompatEditText
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.View
+import android.widget.EditText
 import android.widget.ImageView
+import com.vicmikhailau.maskededittext.MaskedEditText
+import com.wehack.cinlocation.database.ReminderDatabase
+import com.wehack.cinlocation.model.Reminder
 import kotlinx.android.synthetic.main.edit_screen.*
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
+import android.provider.MediaStore.Images.Media.getBitmap
+import android.graphics.Bitmap
+import android.provider.MediaStore
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.SupportMapFragment
+import java.text.SimpleDateFormat
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.OnMapReadyCallback
+
+
+
 
 class EditScreen() : AppCompatActivity() {
 
@@ -17,25 +41,82 @@ class EditScreen() : AppCompatActivity() {
 
     var toolbar: Toolbar? = null
     var image: ImageView? = null
-    var buttom: FloatingActionButton? = null
+    var editPhoto: FloatingActionButton? = null
+    var reminderSelected: Reminder? = null
+    var editText: EditText? = null
+    var title: AppCompatEditText? = null
+    var endDate: MaskedEditText? = null
+    var startDate: MaskedEditText? = null
+    var mMap: SupportMapFragment? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.edit_screen)
 
+        val id: Long = intent?.extras?.get("itemId") as Long
+
         toolbar = viewToolbar
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        buttom = viewFloatBtn
-        buttom?.setOnClickListener(){
-            Snackbar.make(it, "Test", Snackbar.LENGTH_LONG).show()
+        editText = view_reminderText
+        title = view_reminderTittle
+        startDate = view_dateS
+        endDate = view_dateE
+//
+//        if (mMap == null) {
+//            mMap = SupportMapFragment.newInstance()
+//            mMap?.getMapAsync(OnMapReadyCallback { googleMap ->
+//                val latLng = LatLng(1.289545, 103.849972)
+//                googleMap.addMarker(MarkerOptions().position(latLng)
+//                        .title("Singapore"))
+//                googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng))
+//            })
+//        }
+
+
+
+        editPhoto = viewFloatBtn
+        editPhoto?.setOnClickListener(){
+            val pickPhotoIntent = Intent(Intent.ACTION_GET_CONTENT)
+            pickPhotoIntent.setType("image/*")
+            startActivityForResult(pickPhotoIntent,1)
         }
 
-
         image = viewImage
-        //image?.setImageResource(item.background)
 
+        getReminderbyReminderId(id)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            val chosenImageUri = data.data
+
+            val mBitmap: Bitmap?
+            mBitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, chosenImageUri)
+            image?.setImageBitmap(mBitmap)
+
+        }
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    fun getReminderbyReminderId(id: Long){
+        doAsync {
+            val dao = ReminderDatabase.getInstance(applicationContext)?.reminderDao()
+            reminderSelected = dao?.findById(id)
+
+            uiThread {
+                editText?.setText(reminderSelected?.text)
+                title?.setText(reminderSelected?.title)
+                toolbar?.setTitle(reminderSelected?.title)
+                val df = SimpleDateFormat("dd/MM/yyyy")
+                startDate?.setText(df.format(reminderSelected?.beginDate))
+                endDate?.setText(df.format(reminderSelected?.endDate))
+
+            }
+        }
     }
 
 
