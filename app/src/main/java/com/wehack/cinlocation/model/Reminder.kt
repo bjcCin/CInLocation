@@ -2,6 +2,7 @@ package com.wehack.cinlocation.model
 
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
+import android.net.Uri
 import java.util.*
 
 @Entity
@@ -14,4 +15,4 @@ data class Reminder(
         var beginDate: Date? = null,
         var endDate: Date? = null,
         var completed: Boolean = false,
-        var image: String = "")
+        var image: String? = null)

@@ -1,5 +1,6 @@
 package com.wehack.cinlocation
 
+import android.annotation.SuppressLint
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
@@ -20,6 +21,7 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.SearchView
 import com.wehack.cinlocation.R.id.action_search
+import com.wehack.cinlocation.R.id.bottom_nav
 
 
 class MainActivity : AppCompatActivity(),
@@ -38,6 +40,7 @@ class MainActivity : AppCompatActivity(),
     private var toolbar: Toolbar? = null
     private var searchMenuItem: MenuItem? = null
     private var menuToolbar: Menu? = null
+    var bottomNavigation:BottomNavigationView? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,8 +51,10 @@ class MainActivity : AppCompatActivity(),
         toolbar = findViewById(R.id.main_toolbar)
         setSupportActionBar(toolbar)
 
+        bottomNavigation = bottom_nav
+
         //BottomNav do projeto
-        bottom_nav.setOnNavigationItemSelectedListener(this)
+        bottomNavigation?.setOnNavigationItemSelectedListener(this)
 
         //Status bar transparente (tá bugando o toolbar, deixar off)
         //val w: Window = getWindow()
@@ -114,7 +119,6 @@ class MainActivity : AppCompatActivity(),
         val id = item?.itemId
 
         if (id == R.id.action_search){
-            Toast.makeText(this, "Profile", Toast.LENGTH_SHORT).show()
             return true
         }
 
@@ -128,24 +132,42 @@ class MainActivity : AppCompatActivity(),
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
-        item.setVisible(false)
 
-        //Seleciona o fragmento de tela que o usuário selecionou no navBottom
-        val fragment: Fragment = when (id) {
-            R.id.nav_home -> fragment_home
-            R.id.nav_add -> fragment_add
-            R.id.nav_profile -> fragment_profile
-            else -> HomeFragment()
+        when (id) {
+            R.id.nav_home -> {
+                val fragment =  HomeFragment()
+                searchMenuItem?.setVisible(true)
+                addFragment(fragment)
+                return true
+            }
+            R.id.nav_add -> {
+                val fragment = AddFragment()
+                searchMenuItem?.setVisible(false)
+                addFragment(fragment)
+                return true
+            }
+//            R.id.nav_profile -> {
+//                val fragment = ProfileFragment()
+//                searchMenuItem?.setVisible(false)
+//                addFragment(fragment)
+//                return true
+//            }
         }
 
+        return false
+    }
 
-        if(id == R.id.nav_add  || id == R.id.nav_profile)
-            searchMenuItem?.setVisible(false)
-        else
-            searchMenuItem?.setVisible(true)
-
-        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment).commit()
-        return true
+    /**
+     * add/replace fragment in container [framelayout]
+     */
+    @SuppressLint("PrivateResource")
+    private fun addFragment(fragment: Fragment) {
+        supportFragmentManager
+                .beginTransaction()
+                .setCustomAnimations(R.anim.design_bottom_sheet_slide_in, R.anim.design_bottom_sheet_slide_out)
+                .replace(R.id.fragment_container, fragment, fragment.javaClass.getSimpleName())
+                .addToBackStack(fragment.javaClass.getSimpleName())
+                .commit()
     }
 
 

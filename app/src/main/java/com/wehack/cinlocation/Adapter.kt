@@ -2,6 +2,9 @@ package com.wehack.cinlocation
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
+import android.net.Uri
+import android.provider.MediaStore
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,6 +12,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import com.wehack.cinlocation.model.Reminder
+import java.io.File
+import java.io.FileInputStream
 import java.util.*
 
 class Adapter (val mData: List<Reminder>?) : RecyclerView.Adapter<Adapter.myViewHolder>(), Filterable  {
@@ -37,11 +42,16 @@ class Adapter (val mData: List<Reminder>?) : RecyclerView.Adapter<Adapter.myView
     }
 
     override fun onBindViewHolder(holder: myViewHolder, position: Int) {
-        val random: Random = Random()
-        val x: Int = random.nextInt(3)
-        val selectedImagem = imagens.get(x)
 
-        holder.backgroundImage?.setImageResource(selectedImagem)
+        if(mDataFiltered?.get(position)?.image != null){
+            val f = File(mDataFiltered?.get(position)?.image)
+            val b = BitmapFactory.decodeStream(FileInputStream(f))
+            holder.backgroundImage?.setImageBitmap(b)
+           // holder.backgroundImage?.setImageURI(mDataFiltered?.get(position)!!.image)
+        } else {
+            holder.backgroundImage?.setImageResource(R.drawable.sem_foto)
+        }
+
         holder.title?.setText(mDataFiltered?.get(position)!!.title)
         holder.location?.setText(mDataFiltered?.get(position)!!.text)
 

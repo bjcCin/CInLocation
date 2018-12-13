@@ -23,7 +23,9 @@ import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 import android.provider.MediaStore.Images.Media.getBitmap
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.provider.MediaStore
+import android.widget.Toast
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import java.text.SimpleDateFormat
@@ -31,8 +33,8 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.OnMapReadyCallback
-
-
+import java.io.File
+import java.io.FileInputStream
 
 
 class EditScreen() : AppCompatActivity() {
@@ -75,6 +77,7 @@ class EditScreen() : AppCompatActivity() {
 //            })
 //        }
 
+        mMap = viewReminderMap as SupportMapFragment
 
 
         editPhoto = viewFloatBtn
@@ -115,8 +118,32 @@ class EditScreen() : AppCompatActivity() {
                 startDate?.setText(df.format(reminderSelected?.beginDate))
                 endDate?.setText(df.format(reminderSelected?.endDate))
 
+                if (reminderSelected?.image != null){
+                    val f = File(reminderSelected?.image)
+                    val b = BitmapFactory.decodeStream(FileInputStream(f))
+                    image?.setImageBitmap(b)
+                }
+
+                mMap?.getMapAsync(OnMapReadyCallback { googleMap ->
+                    mapConfigs(googleMap, reminderSelected?.lat, reminderSelected?.lon)
+                })
+
             }
         }
+    }
+
+    fun mapConfigs(googleMap: GoogleMap, lat: Double?, lon: Double?){
+        val latLng = LatLng(lat!!, lon!!)
+        googleMap.addMarker(MarkerOptions().position(latLng))
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
+        googleMap.setMinZoomPreference(googleMap.minZoomLevel + 18)
+
+        googleMap.setOnMapClickListener {
+            Toast.makeText(applicationContext, "Map clicado", Toast.LENGTH_SHORT).show()
+        }
+
+        googleMap.uiSettings.setAllGesturesEnabled(false)
+
     }
 
 

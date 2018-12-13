@@ -1,7 +1,16 @@
 package fragments
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.media.Image
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
 import android.support.v7.widget.*
@@ -11,6 +20,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Toast
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -30,32 +40,43 @@ import java.util.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.LatLng
+import com.wehack.cinlocation.MainActivity
+import com.wehack.cinlocation.R.id.nav_home
+import com.wehack.cinlocation.database.ImageSaver
+import org.jetbrains.anko.imageURI
+import java.io.*
 
 
 class AddFragment : Fragment() {
     var mMap: SupportMapFragment? = null
-    var toolbar: Toolbar? = null
+
+    var addImage: ImageView? = null
+    var imageURI: String? = null
+    var editImageButton: FloatingActionButton? = null
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_add, container, false)
 
         val addbutton = view.findViewById(R.id.addCadastro) as Button
-        val editImageButton = view.findViewById(R.id.viewFloatBtn) as FloatingActionButton
+        editImageButton = view.findViewById(R.id.viewFloatBtn) as FloatingActionButton?
         val reminderText = view.findViewById(R.id.add_reminderText) as EditText
         val reminderTitle = view.findViewById(R.id.add_reminderTittle) as AppCompatEditText
-
-
+        val toolbar = view.findViewById(R.id.addToolbar) as Toolbar
+        val remindEndDate = view.findViewById(R.id.addDateE_textInputLayout) as? MaskedEditText
+        val remindStartDate = view.findViewById(R.id.addDateS_textInputLayout) as? MaskedEditText
+        addImage = view.findViewById(R.id.add_imageView) as ImageView
 
         addbutton.setOnClickListener {
-            val remindEndDate = view.findViewById(R.id.addDateE_textInputLayout) as? MaskedEditText
-            val remindStartDate = view.findViewById(R.id.addDateS_textInputLayout) as? MaskedEditText
 
             addReminder(reminderTitle.text.toString(), reminderText.text.toString(),
-                    remindEndDate?.text.toString(), remindStartDate?.text.toString())
+                    remindEndDate?.text.toString(), remindStartDate?.text.toString(), imageURI)
         }
 
-        editImageButton.setOnClickListener {
-            Toast.makeText(context, "Editar Imagem", Toast.LENGTH_SHORT).show()
+        editImageButton?.setOnClickListener {
+            val pickPhotoIntent = Intent(Intent.ACTION_GET_CONTENT)
+            pickPhotoIntent.setType("image/*")
+            startActivityForResult(pickPhotoIntent,1)
         }
 
         mMap = SupportMapFragment.newInstance()
@@ -69,6 +90,64 @@ class AddFragment : Fragment() {
         return view
     }
 
+    /**
+     * OnResult of addImage button changes image of collapse toolbar
+     */
+
+    @SuppressLint("SimpleDateFormat")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            val bitMapURI = data.data
+            var mBitmap: Bitmap? = null
+            mBitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, bitMapURI)
+            addImage?.setImageBitmap(mBitmap)
+            doAsync {
+                val path = saveToInternalStorage(mBitmap)
+                uiThread {
+                    imageURI = path
+                }
+            }
+
+        }
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    private fun saveToInternalStorage(bitmapImage:Bitmap?):String {
+        val cw = ContextWrapper(context)
+        // path to /data/data/yourapp/app_data/imageDir
+        val directory = cw.getDir("imageDir", Context.MODE_PRIVATE)
+        // Create imageDir
+        val date: String = SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(Date())
+        val imageName = date.replace("-","")
+                            .replace(":","")
+                            .replace(" ","")
+
+        val mypath = File(directory, imageName)
+        var fos: FileOutputStream? = null
+        try
+        {
+            fos = FileOutputStream(mypath)
+            // Use the compress method on the BitMap object to write image to the OutputStream
+            bitmapImage?.compress(Bitmap.CompressFormat.PNG, 100, fos)
+        }
+        catch (e:Exception) {
+            e.printStackTrace()
+        }
+        finally
+        {
+            try
+            {
+                fos?.close()
+            }
+            catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+
+        return mypath.absolutePath
+    }
+
     fun mapConfigs(googleMap: GoogleMap){
         val latLng = LatLng(-8.0556681, -34.951578)
         googleMap.addMarker(MarkerOptions().position(latLng)
@@ -80,11 +159,13 @@ class AddFragment : Fragment() {
             Toast.makeText(context, "Map clicado", Toast.LENGTH_SHORT).show()
         }
 
+        googleMap.uiSettings.setAllGesturesEnabled(false)
+
     }
 
 
     @SuppressLint("SimpleDateFormat")
-    fun addReminder(title: String, text: String, textEndDate: String?, textStartDate: String?) {
+    fun addReminder(title: String, text: String, textEndDate: String?, textStartDate: String?, imageUri: String?) {
 
         val df = SimpleDateFormat("dd/MM/yyyy")
         df.setLenient(false)
@@ -92,19 +173,22 @@ class AddFragment : Fragment() {
         val endDate: Date = df.parse(textEndDate)
         val startDate: Date = df.parse(textStartDate)
 
-        val rem = Reminder(title = title, text = text, endDate = endDate, beginDate = startDate)
+        val rem = Reminder(title = title, text = text, endDate = endDate, beginDate = startDate, image = imageUri)
         Log.e("printData", "${endDate} and ${startDate}")
 
+        val dao = ReminderDatabase.getInstance(context!!)?.reminderDao()
 
         doAsync {
-            val dao = ReminderDatabase.getInstance(context!!)?.reminderDao()
             dao?.insert(rem)
             uiThread {
-                Toast.makeText(context, "Reminder cadastrado com sucesso", Toast.LENGTH_SHORT).show()
+                addFragment()
             }
 
-
         }
+    }
+
+    private fun addFragment() {
+      MainActivity().bottomNavigation?.selectedItemId = nav_home
     }
 
 
