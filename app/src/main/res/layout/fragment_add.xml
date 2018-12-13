@@ -50,111 +50,106 @@
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.NestedScrollView
+        android:id="@+id/addNestedScroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/addNestedScroll"
+        android:layout_marginBottom="20dp"
         android:fillViewport="true"
         android:padding="8dp"
-        android:layout_marginBottom="20dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-                <LinearLayout
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp">
+
+                <android.support.v7.widget.AppCompatEditText
+                    android:id="@+id/add_reminderTittle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    >
+                    android:hint="@string/titulo_do_lembrete" />
 
-                    <android.support.design.widget.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="22dp">
-
-                        <android.support.v7.widget.AppCompatEditText
-                            android:layout_width="match_parent"
-                            android:hint="@string/titulo_do_lembrete"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/add_reminderTittle"/>
-
-                    </android.support.design.widget.TextInputLayout>
+            </android.support.design.widget.TextInputLayout>
 
 
-                    <EditText
-                        android:inputType="textLongMessage"
-                        android:background="@drawable/edit_text_background"
-                        android:layout_width="match_parent"
-                        android:layout_height="150dp"
-                        android:hint="@string/escreva_seu_lembrete"
-                        android:gravity="top"
-                        android:layout_marginTop="22dp"
-                        android:padding="10dp"
-                        android:id="@+id/add_reminderText"
-                        app:layout_constraintTop_toTopOf="parent"
-                        />
+            <EditText
+                android:id="@+id/add_reminderText"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginTop="22dp"
+                android:background="@drawable/edit_text_background"
+                android:gravity="top"
+                android:hint="@string/escreva_seu_lembrete"
+                android:inputType="textLongMessage"
+                android:padding="10dp"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                    <android.support.design.widget.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="22dp"
-                        >
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp">
 
-                        <com.vicmikhailau.maskededittext.MaskedEditText
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="@string/data_inicial"
-                            android:ems="10"
-                            app:mask="##/##/####"
-                            android:inputType="date"
-                            android:id="@+id/addDateS_textInputLayout"/>
+                <com.vicmikhailau.maskededittext.MaskedEditText
+                    android:id="@+id/addDateS_textInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/data_inicial"
+                    android:inputType="date"
+                    app:mask="##/##/####" />
 
-                    </android.support.design.widget.TextInputLayout>
+            </android.support.design.widget.TextInputLayout>
 
-                    <android.support.design.widget.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="22dp"
-                        >
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp">
 
-                        <com.vicmikhailau.maskededittext.MaskedEditText
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="@string/data_final"
-                            android:ems="10"
-                            app:mask="##/##/####"
-                            android:inputType="date"
-                            android:id="@+id/addDateE_textInputLayout"/>
+                <com.vicmikhailau.maskededittext.MaskedEditText
+                    android:id="@+id/addDateE_textInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/data_final"
+                    android:inputType="date"
+                    app:mask="##/##/####" />
 
-                    </android.support.design.widget.TextInputLayout>
+            </android.support.design.widget.TextInputLayout>
 
 
-                    <!--<fragment-->
-                        <!--android:layout_marginTop="22dp"-->
-                        <!--android:id="@+id/newReminderMap"-->
-                        <!--android:layout_width="match_parent"-->
-                        <!--android:layout_height="250dp"-->
-                        <!--android:name="com.google.android.gms.maps.SupportMapFragment"-->
-                        <!--/>-->
+            <!--<fragment-->
+            <!--android:layout_marginTop="22dp"-->
+            <!--android:id="@+id/newReminderMap"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="250dp"-->
+            <!--android:name="com.google.android.gms.maps.SupportMapFragment"-->
+            <!--/>-->
 
-                    <FrameLayout
-                        android:id="@+id/addMap"
-                        android:layout_width="match_parent"
-                        android:layout_height="250dp"
-                        android:layout_marginTop="22dp"/>
+            <FrameLayout
+                android:id="@+id/addMap"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_marginTop="22dp" />
 
-                    <Button
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/addCadastro"
-                        android:text="@string/cadastrar"
-                        android:layout_gravity="bottom|center_horizontal"
-                        android:layout_marginTop="22dp"
+            <Button
+                android:id="@+id/addCadastro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginTop="22dp"
+                android:text="@string/cadastrar"
 
-                        />
+                />
 
-                </LinearLayout>
+        </LinearLayout>
 
 
-
-            </android.support.v4.widget.NestedScrollView>
+    </android.support.v4.widget.NestedScrollView>
 
 
     <android.support.design.widget.FloatingActionButton
