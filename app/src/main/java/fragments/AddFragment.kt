@@ -73,8 +73,13 @@ class AddFragment : Fragment() {
         val latLng = LatLng(-8.0556681, -34.951578)
         googleMap.addMarker(MarkerOptions().position(latLng)
                 .title("Centro de Informatica - UFPE"))
-        googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng))
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng))
         googleMap.setMinZoomPreference(googleMap.minZoomLevel + 17)
+
+        googleMap.setOnMapClickListener {
+            Toast.makeText(context, "Map clicado", Toast.LENGTH_SHORT).show()
+        }
+
     }
 
 
