@@ -10,6 +10,7 @@ import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.SearchView
 import android.support.v7.widget.Toolbar
@@ -20,11 +21,11 @@ import fragments.AddFragment
 import fragments.HomeFragment
 import fragments.ProfileFragment
 import kotlinx.android.synthetic.main.activity_main.*
+import android.widget.Toast
 
 
 class MainActivity : AppCompatActivity(),
-        BottomNavigationView.OnNavigationItemSelectedListener,
-        BottomNavigationView.OnNavigationItemReselectedListener {
+        BottomNavigationView.OnNavigationItemSelectedListener{
 
     companion object {
         val CURRENT_LOCATION_REQUEST_CODE = 42
@@ -43,7 +44,8 @@ class MainActivity : AppCompatActivity(),
     private var toolbar: Toolbar? = null
     private var searchMenuItem: MenuItem? = null
     private var menuToolbar: Menu? = null
-    var bottomNavigation:BottomNavigationView? = null
+    var bottomNavigation: BottomNavigationView? = null
+    var dialog: AlertDialog? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -121,24 +123,47 @@ class MainActivity : AppCompatActivity(),
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         val id = item?.itemId
 
-        if (id == R.id.action_search){
-            return true
+        when (id) {
+            R.id.action_search -> return true
+            R.id.action_sortby -> {
+                showDialog()
+            }
         }
-
         return super.onOptionsItemSelected(item)
     }
 
-    //Bons padroes idicam que aqui deve ser implementado a funcao de atualizar a lista
-    override fun onNavigationItemReselected(item: MenuItem) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    // Method to show an alert dialog with single choice list items
+    private fun showDialog() {
+        lateinit var dialog: AlertDialog
+        val array = arrayOf("Nome", "Data")
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Ordenar por:")
+
+        builder.setSingleChoiceItems(array, -1,
+                { _, which ->
+
+                    fragment_home.sortedBy(which)
+
+                    dialog.dismiss()
+                })
+
+        dialog = builder.create()
+        dialog.show()
     }
+
+
+    // Extension function to show toast message
+    fun Context.toast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
 
         when (id) {
             R.id.nav_home -> {
-                val fragment =  HomeFragment()
+                val fragment = HomeFragment()
                 searchMenuItem?.setVisible(true)
                 addFragment(fragment)
                 return true

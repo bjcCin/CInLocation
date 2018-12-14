@@ -64,5 +64,9 @@ class HomeFragment : Fragment() {
 
     }
 
+    fun sortedBy(option: Int){
+        adapter?.sortedBy(option)
+    }
+
 
 }
