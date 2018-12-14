@@ -40,6 +40,8 @@ class HomeFragment : Fragment() {
         doAsync {
             val dao = ReminderDatabase.getInstance(context!!)?.reminderDao()
             val long: Long = 3
+           // dao?.getAll()?.forEach { dao.delete(it) }
+
 //            val reminder: Reminder = dao?.findById(long)!!
             reminderList = dao?.getAll()
 
