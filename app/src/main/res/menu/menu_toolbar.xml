@@ -12,5 +12,12 @@
         android:icon="@drawable/search"
         android:orderInCategory="100"
         app:actionViewClass="android.support.v7.widget.SearchView"/>
+    <item
+        android:title=""
+        android:id="@+id/action_sortby"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/sortby"
+        android:orderInCategory="100" />
 
 </menu>
+

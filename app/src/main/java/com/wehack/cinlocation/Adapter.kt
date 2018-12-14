@@ -96,6 +96,16 @@ class Adapter (val mData: List<Reminder>?) : RecyclerView.Adapter<Adapter.myView
 
     }
 
+    fun sortedBy(value: Int){
+        when(value){
+            0 -> mDataFiltered = mDataFiltered?.sortedBy { it.title }
+            1 -> mDataFiltered = mDataFiltered?.sortedBy { it.beginDate }
+        }
+        notifyDataSetChanged()
+    }
+
+
+
     inner class myViewHolder(itemView: View, val context: Context) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
 
         var backgroundImage: ImageView? = null
