@@ -58,8 +58,8 @@ class ReminderManagerImp(private val context: Context) : ReminderManager {
                 .Builder()
                 .setRequestId(remId?.toString())
                 .setCircularRegion(
-                        reminder.lat,
-                        reminder.lon,
+                        reminder.lat!!,
+                        reminder.lon!!,
                         GEOFENCE_RADIUS_IN_METERS
                 )
                 .setExpirationDuration(Geofence.NEVER_EXPIRE)

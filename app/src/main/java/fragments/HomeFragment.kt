@@ -39,20 +39,15 @@ class HomeFragment : Fragment() {
         var reminderList: List<Reminder>? = ArrayList()
         doAsync {
             val dao = ReminderDatabase.getInstance(context!!)?.reminderDao()
-           // val mRemId = dao?.insert(rem)
-//            if (mRemId != null) {
-//                val mRem = dao.findById(mRemId)
-//                assert(mRem.text == remText)
-//            } else {
-//                assert(false)
-//            }
-            var long: Long = 3
-//            var reminder: Reminder = dao?.findById(long)!!
+            val long: Long = 3
+//            val reminder: Reminder = dao?.findById(long)!!
             reminderList = dao?.getAll()
 
             uiThread {
-                //Log.e("reminder", reminder.title)
-                //Log.e("id", "${mRemId}")
+                for (reminder:Reminder in reminderList!!){
+                    Log.i("imagemID", reminder.image.toString())
+                }
+
                 adapter = Adapter(reminderList)
                 val recyclerView: RecyclerView = inflate.findViewById(R.id.rv_list)
                 recyclerView.adapter = adapter
@@ -60,11 +55,6 @@ class HomeFragment : Fragment() {
             }
 
         }
-
-
-
-
-
 
         return inflate
     }

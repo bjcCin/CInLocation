@@ -125,7 +125,7 @@
 
 
             <fragment
-                android:id="@+id/newReminderMap"
+                android:id="@+id/viewReminderMap"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
                 android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -139,6 +139,7 @@
                 android:text="@string/salvar"
                 android:layout_gravity="bottom|center_horizontal"
                 android:layout_marginTop="22dp"
+                style="@style/Widget.AppCompat.Button.Colored"
                 />
 
 
@@ -157,9 +158,6 @@
         app:layout_anchorGravity="bottom|end"
         android:layout_margin="6dp"
         android:src="@drawable/pencil"/>
-
-
-
 
 
 </android.support.design.widget.CoordinatorLayout>
