@@ -1,5 +1,6 @@
 package com.wehack.cinlocation
 
+import android.annotation.SuppressLint
 import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
@@ -14,7 +15,6 @@ import android.support.v7.widget.SearchView
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import com.wehack.cinlocation.R.id.action_search
 import fragments.AddFragment
 import fragments.HomeFragment

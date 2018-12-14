@@ -1,15 +1,11 @@
 package fragments
 
 import android.annotation.SuppressLint
-import android.app.Activity
+import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.media.Image
-import android.net.Uri
-import android.app.Activity.RESULT_OK
 import android.os.Bundle
 import android.provider.MediaStore
 import android.support.design.widget.FloatingActionButton
@@ -23,27 +19,25 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.Toast
 import com.google.android.gms.location.places.ui.PlacePicker
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.vicmikhailau.maskededittext.MaskedEditText
+import com.wehack.cinlocation.MainActivity
 import com.wehack.cinlocation.R
 import com.wehack.cinlocation.database.ReminderManagerImp
 import com.wehack.cinlocation.model.Reminder
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.LatLng
-import com.wehack.cinlocation.MainActivity
-import com.wehack.cinlocation.R.id.nav_home
-import com.wehack.cinlocation.database.ImageSaver
-import org.jetbrains.anko.imageURI
-import java.io.*
 
 
 class AddFragment : Fragment() {
@@ -189,11 +183,7 @@ class AddFragment : Fragment() {
         val rem = Reminder(title = title, text = text, endDate = endDate, beginDate = startDate, image = imageUri, lat = latitude , lon = longitude)
         Log.e("printData", "${endDate} and ${startDate}")
 
-        val dao = ReminderDatabase.getInstance(context!!)?.reminderDao()
-
         doAsync {
-//            val dao = ReminderDatabase.getInstance(context!!)?.reminderDao()
-//            dao?.insert(rem)
             ReminderManagerImp
                     .getInstance(context!!)
                     ?.insert(rem)
