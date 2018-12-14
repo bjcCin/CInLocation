@@ -21,10 +21,14 @@ class GeofenceTransitionsIntentService : IntentService("GefenceService") {
                 .getInstance(this)
                 ?.findById(geofence.requestId.toLong())
 
+//        sendNotification(
+//                this,
+//                reminder?.title ?: "Novo Lembrete",
+//                reminder?.text ?: "Toque para mais detalhes")
         sendNotification(
                 this,
-                reminder?.title ?: "Novo Lembrete",
-                reminder?.text ?: "Toque para mais detalhes")
+                "Você tem um lembrete para este local",
+                reminder?.title ?: "Toque para mais detalhes")
     }
 
     private fun getFirstTriggeredGeofence(event: GeofencingEvent): Geofence =
