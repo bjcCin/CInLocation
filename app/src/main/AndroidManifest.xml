@@ -33,7 +33,9 @@
 
         <activity android:name=".EditScreen"
             android:theme="@style/AppTheme.CollaptionBar"/>
-
+        <service
+            android:name=".service.GeofenceTransitionsIntentService"
+            android:exported="true" />
     </application>
 
 

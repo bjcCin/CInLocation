@@ -1,25 +1,25 @@
 package com.wehack.cinlocation
 
-import android.support.v7.app.AppCompatActivity
+import android.app.SearchManager
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
+import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.SearchView
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
-
 import android.widget.Toast
+import com.wehack.cinlocation.R.id.action_search
 import fragments.AddFragment
 import fragments.HomeFragment
 import fragments.ProfileFragment
 import kotlinx.android.synthetic.main.activity_main.*
-import android.app.SearchManager
-import android.content.Context
-import android.content.pm.PackageManager
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.SearchView
-import com.wehack.cinlocation.R.id.action_search
 
 
 class MainActivity : AppCompatActivity(),
@@ -29,6 +29,11 @@ class MainActivity : AppCompatActivity(),
     companion object {
         val CURRENT_LOCATION_REQUEST_CODE = 42
         var locationPermissionGranted = false
+
+        fun newIntent(context: Context): Intent {
+            val intent = Intent(context, MainActivity::class.java)
+            return intent
+        }
     }
 
     private var searchView: SearchView? = null

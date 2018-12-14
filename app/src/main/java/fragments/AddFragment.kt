@@ -24,7 +24,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.vicmikhailau.maskededittext.MaskedEditText
 import com.wehack.cinlocation.R
-import com.wehack.cinlocation.database.ReminderDatabase
+import com.wehack.cinlocation.database.ReminderManagerImp
 import com.wehack.cinlocation.model.Reminder
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
@@ -100,8 +100,11 @@ class AddFragment : Fragment() {
 
 
         doAsync {
-            val dao = ReminderDatabase.getInstance(context!!)?.reminderDao()
-            dao?.insert(rem)
+//            val dao = ReminderDatabase.getInstance(context!!)?.reminderDao()
+//            dao?.insert(rem)
+            ReminderManagerImp
+                    .getInstance(context!!)
+                    ?.insert(rem)
             uiThread {
                 Toast.makeText(context, "Reminder cadastrado com sucesso", Toast.LENGTH_SHORT).show()
             }
@@ -121,6 +124,7 @@ class AddFragment : Fragment() {
 
     private fun updateMapLocation(data: Intent?) {
         val place = PlacePicker.getPlace(this.context, data)
+
         val latlng = place.latLng
         val name = place.name
         mMap?.getMapAsync {
