@@ -13,7 +13,7 @@ import com.wehack.cinlocation.R
 
 private val NOTIFICATION_CHANNEL_ID = BuildConfig.APPLICATION_ID + ".channel"
 
-fun sendNotification(context: Context, message: String) {
+fun sendNotification(context: Context, message: String, content: String="") {
     val notificationManager = context
             .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -39,6 +39,7 @@ fun sendNotification(context: Context, message: String) {
             .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle(message)
             .setContentIntent(notificationPendingIntent)
+            .setContentText(content)
             .setAutoCancel(true)
             .build()
 

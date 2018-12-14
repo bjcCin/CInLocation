@@ -42,32 +42,43 @@ class ReminderManagerImp(private val context: Context) : ReminderManager {
     private val reminders: ReminderDao? = ReminderDatabase.getInstance(context)?.reminderDao()
 
 
-    override fun findById(id: Long): Reminder {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun findById(id: Long): Reminder? {
+        return reminders?.findById(id)
     }
 
-    override fun getAll(): List<Reminder> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun getAll(): List<Reminder>? {
+        return reminders?.getAll()
     }
 
-    override fun insert(reminder: Reminder): Long {
+    override fun insert(reminder: Reminder): Long? {
         val remId = reminders?.insert(reminder)
+        val geofence = buildGeofence(reminder)
+        registerGeofencing(geofence)
+        return remId
+    }
+
+    fun buildGeofence(reminder: Reminder): Geofence {
         val now = Date().time
         val timeToExpire = now - reminder.endDate?.time!!
-        val geofence = Geofence
-                .Builder()
-                .setRequestId(remId?.toString())
-                .setCircularRegion(
-                        reminder.lat!!,
-                        reminder.lon!!,
-                        GEOFENCE_RADIUS_IN_METERS
-                )
-                .setExpirationDuration(Geofence.NEVER_EXPIRE)
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
-                .build()
-        Log.d("__LOCATION", "Geofence ${geofence.requestId} created")
-        registerGeofencing(geofence)
-        return remId!!
+        return Geofence
+            .Builder()
+            .setRequestId(reminder.id.toString())
+            .setCircularRegion(
+                    reminder.lat!!,
+                    reminder.lon!!,
+                    GEOFENCE_RADIUS_IN_METERS
+            )
+            .setExpirationDuration(timeToExpire)
+            .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+            .build()
+    }
+
+    override fun update(reminder: Reminder): Reminder {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun delete(vararg reminder: Reminder) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     private fun buildGeofencingRequest(geofence: Geofence): GeofencingRequest {
@@ -85,14 +96,10 @@ class ReminderManagerImp(private val context: Context) : ReminderManager {
                         Log.d("__LOCATION", "Geofence created!")
                     }
                     .addOnFailureListener {
-                        Log.d("__LOCATION", "Deu merda")
+                        Log.d("__LOCATION", "Error while creating geofence")
                     }
         } else {
-            Log.d("__LOCATION", "Deu ruim na permissao")
+            Log.d("__LOCATION", "User needs to grant permission!")
         }
-    }
-
-    override fun delete(vararg reminder: Reminder) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
