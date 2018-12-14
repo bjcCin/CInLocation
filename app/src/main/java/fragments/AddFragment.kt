@@ -9,11 +9,13 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.Image
 import android.net.Uri
+import android.app.Activity.RESULT_OK
 import android.os.Bundle
 import android.provider.MediaStore
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
-import android.support.v7.widget.*
+import android.support.v7.widget.AppCompatEditText
+import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -22,18 +24,15 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import com.google.android.gms.location.places.ui.PlacePicker
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.vicmikhailau.maskededittext.MaskedEditText
-import com.wehack.cinlocation.Adapter
-import com.wehack.cinlocation.MainActivity.Companion.locationPermissionGranted
 import com.wehack.cinlocation.R
 import com.wehack.cinlocation.database.ReminderDatabase
 import com.wehack.cinlocation.model.Reminder
-import kotlinx.android.synthetic.main.fragment_add.*
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.uiThread
 import java.text.SimpleDateFormat
 import java.util.*
@@ -48,11 +47,18 @@ import java.io.*
 
 
 class AddFragment : Fragment() {
+    companion object {
+        const val PLACE_PICKER_REQUEST = 1
+        const val CHANGE_REMINDER_IMAGE = 2
+    }
     var mMap: SupportMapFragment? = null
 
     var addImage: ImageView? = null
     var imageURI: String? = null
     var editImageButton: FloatingActionButton? = null
+
+    var latitude: Double? = null
+    var longitude: Double? = null
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -76,7 +82,7 @@ class AddFragment : Fragment() {
         editImageButton?.setOnClickListener {
             val pickPhotoIntent = Intent(Intent.ACTION_GET_CONTENT)
             pickPhotoIntent.setType("image/*")
-            startActivityForResult(pickPhotoIntent,1)
+            startActivityForResult(pickPhotoIntent,CHANGE_REMINDER_IMAGE)
         }
 
         mMap = SupportMapFragment.newInstance()
@@ -85,7 +91,7 @@ class AddFragment : Fragment() {
             mapConfigs(googleMap)
         })
 
-        getChildFragmentManager().beginTransaction().replace(R.id.addMap, mMap).commit();
+        getChildFragmentManager().beginTransaction().replace(R.id.addMap, mMap).commit()
 
         return view
     }
@@ -97,10 +103,11 @@ class AddFragment : Fragment() {
     @SuppressLint("SimpleDateFormat")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
+
+        if (requestCode == CHANGE_REMINDER_IMAGE) {
             val bitMapURI = data.data
-            var mBitmap: Bitmap? = null
-            mBitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, bitMapURI)
+            Log.i("bitmapUri", bitMapURI.toString())
+            val mBitmap: Bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, bitMapURI)
             addImage?.setImageBitmap(mBitmap)
             doAsync {
                 val path = saveToInternalStorage(mBitmap)
@@ -109,6 +116,12 @@ class AddFragment : Fragment() {
                 }
             }
 
+        }
+
+        if (requestCode == PLACE_PICKER_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                updateMapLocation(data)
+            }
         }
     }
 
@@ -156,13 +169,13 @@ class AddFragment : Fragment() {
         googleMap.setMinZoomPreference(googleMap.minZoomLevel + 17)
 
         googleMap.setOnMapClickListener {
-            Toast.makeText(context, "Map clicado", Toast.LENGTH_SHORT).show()
+            val pickerIntent = PlacePicker.IntentBuilder()
+            startActivityForResult(pickerIntent.build(this.activity), PLACE_PICKER_REQUEST)
         }
 
         googleMap.uiSettings.setAllGesturesEnabled(false)
 
     }
-
 
     @SuppressLint("SimpleDateFormat")
     fun addReminder(title: String, text: String, textEndDate: String?, textStartDate: String?, imageUri: String?) {
@@ -173,7 +186,7 @@ class AddFragment : Fragment() {
         val endDate: Date = df.parse(textEndDate)
         val startDate: Date = df.parse(textStartDate)
 
-        val rem = Reminder(title = title, text = text, endDate = endDate, beginDate = startDate, image = imageUri)
+        val rem = Reminder(title = title, text = text, endDate = endDate, beginDate = startDate, image = imageUri, lat = latitude , lon = longitude)
         Log.e("printData", "${endDate} and ${startDate}")
 
         val dao = ReminderDatabase.getInstance(context!!)?.reminderDao()
@@ -181,14 +194,26 @@ class AddFragment : Fragment() {
         doAsync {
             dao?.insert(rem)
             uiThread {
-                addFragment()
             }
 
         }
     }
 
-    private fun addFragment() {
-      MainActivity().bottomNavigation?.selectedItemId = nav_home
+
+    private fun updateMapLocation(data: Intent?) {
+        val place = PlacePicker.getPlace(this.context, data)
+        val latlng = place.latLng
+        latitude  = place.latLng.latitude
+        longitude = place.latLng.longitude
+        val name = place.name
+        mMap?.getMapAsync {
+            it.addMarker(
+                    MarkerOptions().position(latlng)
+                            .title(String.format("Lembre-me ao chegar em: %s", name))
+            ).showInfoWindow()
+            it.moveCamera(CameraUpdateFactory.newLatLng(latlng))
+            it.setMinZoomPreference(it.minZoomLevel + 17)
+        }
     }
 
 

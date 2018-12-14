@@ -122,6 +122,8 @@ class EditScreen() : AppCompatActivity() {
                     val f = File(reminderSelected?.image)
                     val b = BitmapFactory.decodeStream(FileInputStream(f))
                     image?.setImageBitmap(b)
+                } else {
+                    image?.setImageResource(R.drawable.sem_foto)
                 }
 
                 mMap?.getMapAsync(OnMapReadyCallback { googleMap ->
