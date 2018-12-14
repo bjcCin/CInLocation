@@ -194,6 +194,8 @@ class AddFragment : Fragment() {
         doAsync {
             dao?.insert(rem)
             uiThread {
+                val intent = Intent(context, MainActivity::class.java)
+                startActivity(intent)
             }
 
         }

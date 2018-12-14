@@ -160,7 +160,4 @@
         android:src="@drawable/pencil"/>
 
 
-
-
-
 </android.support.design.widget.CoordinatorLayout>
