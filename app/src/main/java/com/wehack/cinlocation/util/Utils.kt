@@ -13,6 +13,13 @@ import com.wehack.cinlocation.R
 
 private val NOTIFICATION_CHANNEL_ID = BuildConfig.APPLICATION_ID + ".channel"
 
+/**
+ * Dispara uma notificação
+ *
+ * @param context da aplicação
+ * @param message titulo da notificação
+ * @param content texto da notificação
+ */
 fun sendNotification(context: Context, message: String, content: String="") {
     val notificationManager = context
             .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -45,5 +52,15 @@ fun sendNotification(context: Context, message: String, content: String="") {
 
     notificationManager.notify(getUniqueId(), notification)
 }
+
+/**
+ * Lança uma exceção com uma mensagem
+ *
+ * @param message da exceção
+ */
+fun fail(message: String = ""): Nothing {
+    throw Exception(message)
+}
+
 
 private fun getUniqueId() = ((System.currentTimeMillis() % 10000).toInt())

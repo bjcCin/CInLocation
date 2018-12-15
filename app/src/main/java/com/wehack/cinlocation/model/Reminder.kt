@@ -2,9 +2,20 @@ package com.wehack.cinlocation.model
 
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
-import android.net.Uri
 import java.util.*
 
+/**
+ * Representa um lembrete cadastrado pelo usuário
+ *
+ * @param title título do lembrete
+ * @param text texto adicional do lembrete
+ * @param lat latitude da localizacao escolhida pelo usuario
+ * @param long longitude da localizacao escolhida pelo usuario
+ * @param beginDate data a partir da qual o lembrete será valido
+ * @param endDate data de expiração
+ * @param completed indica se o lembrete ainda é válido
+ * @param image imagem adicionada pelo usuário
+ */
 @Entity
 data class Reminder(
         @PrimaryKey(autoGenerate = true) var id: Long? = null,
