@@ -22,6 +22,7 @@ import fragments.HomeFragment
 import fragments.ProfileFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import android.widget.Toast
+import com.wehack.cinlocation.R.id.action_sortby
 
 
 class MainActivity : AppCompatActivity(),
@@ -44,8 +45,9 @@ class MainActivity : AppCompatActivity(),
     private var toolbar: Toolbar? = null
     private var searchMenuItem: MenuItem? = null
     private var menuToolbar: Menu? = null
-    var bottomNavigation: BottomNavigationView? = null
-    var dialog: AlertDialog? = null
+    private var bottomNavigation: BottomNavigationView? = null
+    private var dialog: AlertDialog? = null
+    private var sortMenuItem: MenuItem? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,6 +88,7 @@ class MainActivity : AppCompatActivity(),
         menuInflater.inflate(R.menu.menu_toolbar, menu)
         menuToolbar = menu
         searchMenuItem = menuToolbar?.findItem(action_search)
+        sortMenuItem = menuToolbar?.findItem(action_sortby)
 
         val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
         searchView = menu?.findItem(R.id.action_search)?.actionView as SearchView
@@ -165,12 +168,14 @@ class MainActivity : AppCompatActivity(),
             R.id.nav_home -> {
                 val fragment = HomeFragment()
                 searchMenuItem?.setVisible(true)
+                sortMenuItem?.setVisible(true)
                 addFragment(fragment)
                 return true
             }
             R.id.nav_add -> {
                 val fragment = AddFragment()
                 searchMenuItem?.setVisible(false)
+                sortMenuItem?.setVisible(false)
                 addFragment(fragment)
                 return true
             }

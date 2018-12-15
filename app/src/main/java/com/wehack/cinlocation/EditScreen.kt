@@ -82,6 +82,7 @@ class EditScreen() : AppCompatActivity() {
 
         toolbar = viewToolbar
         setSupportActionBar(toolbar)
+        getSupportActionBar()?.setTitle(null);
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         editText = view_reminderText
