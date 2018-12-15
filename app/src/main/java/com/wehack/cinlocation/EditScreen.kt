@@ -45,6 +45,9 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.util.*
+import com.wehack.cinlocation.util.stringToDate
+import com.wehack.cinlocation.util.saveToInternalStorage
+
 
 
 class EditScreen() : AppCompatActivity() {
@@ -131,7 +134,7 @@ class EditScreen() : AppCompatActivity() {
             image?.setImageBitmap(mBitmap)
 
             doAsync {
-                val path = Utils().saveToInternalStorage(mBitmap, applicationContext)
+                val path = saveToInternalStorage(mBitmap, applicationContext)
                 uiThread {
                     imageURI = path
                 }
@@ -268,8 +271,9 @@ class EditScreen() : AppCompatActivity() {
             else
                 rem?.image = imageURI
 
-            rem?.beginDate = Utils().stringToDate(startDate?.text.toString())
-            rem?.endDate = Utils().stringToDate(endDate?.text.toString())
+            rem?.beginDate = stringToDate(startDate?.text.toString())
+            rem?.endDate = stringToDate(endDate?.text.toString())
+
 
             if(rem != null){
                 dao.update(rem)
