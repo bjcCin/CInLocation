@@ -70,6 +70,7 @@ class ReminderManagerImp(private val context: Context) : ReminderManager {
      * @param reminder a ser inserido
      */
     override fun insert(reminder: Reminder): Long? {
+        Log.d("__LOCATION", reminder.toString())
         val remId = reminders?.insert(reminder)
         val geofence = buildGeofence(reminder)
         registerGeofencing(geofence)
@@ -119,7 +120,7 @@ class ReminderManagerImp(private val context: Context) : ReminderManager {
      */
     private fun buildGeofencingRequest(geofence: Geofence): GeofencingRequest {
         return GeofencingRequest.Builder()
-                .setInitialTrigger(0)
+                .setInitialTrigger(Geofence.GEOFENCE_TRANSITION_ENTER)
                 .addGeofences(listOf(geofence))
                 .build()
     }

@@ -5,7 +5,6 @@ import android.content.Intent
 import android.util.Log
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingEvent
-import com.wehack.cinlocation.database.ReminderManagerImp
 import com.wehack.cinlocation.util.sendNotification
 
 class GeofenceTransitionsIntentService : IntentService("GefenceService") {
@@ -17,18 +16,21 @@ class GeofenceTransitionsIntentService : IntentService("GefenceService") {
         }
 
         val geofence = getFirstTriggeredGeofence(geofencingEnvent)
-        val reminder = ReminderManagerImp
-                .getInstance(this)
-                ?.findById(geofence.requestId.toLong())
+        Log.d("__LOCATION", "GEoID")
+        Log.d("__LOCATION", geofence?.requestId)
+//        val reminder = ReminderManagerImp
+//                .getInstance(this)
+//                ?.findById(geofence.requestId.toLong())
 
 //        sendNotification(
 //                this,
 //                reminder?.title ?: "Novo Lembrete",
 //                reminder?.text ?: "Toque para mais detalhes")
+        Log.d("__LOCATION", "GEOFENCING TRIGGERED")
         sendNotification(
                 this,
                 "Você tem um lembrete para este local",
-                reminder?.title ?: "Toque para mais detalhes")
+                "Toque para mais detalhes")
     }
 
     private fun getFirstTriggeredGeofence(event: GeofencingEvent): Geofence =
