@@ -26,15 +26,8 @@ class HomeFragment : Fragment() {
 
         val inflate = inflater.inflate(R.layout.fragment_home,container, false)!!
 
-        val mList: ArrayList<Item>? = ArrayList()
-        mList?.add(Item(R.drawable.biblioteca_ufpe, "Pegar livro de matemática", "BC UFPE"))
-        mList?.add(Item(R.drawable.cin_ufpe, "Primeiro acompanhamento android", "CIn UFPE"))
-        mList?.add(Item(R.drawable.riomar, "Comprar celular", "Rio Mar"))
-        mList?.add(Item(R.drawable.marco_zero, "Passar na InLoco", "Marco Zero"))
-        mList?.add(Item(R.drawable.conde_boa_vista, "Tirar o VEM", "Conde da BV"))
 
-        val remText = "Shopping"
-        val rem = Reminder(text = remText, title = "Comprar Celular")
+
 
         var reminderList: List<Reminder>? = ArrayList()
         doAsync {

@@ -17,4 +17,7 @@
     <string name="titulo_do_lembrete">Titulo do Lembrete</string>
     <string name="reminder_image">Reminder Image</string>
     <string name="marco_zero">Marco Zero</string>
+    <string name="delete_button">Delete button</string>
+    <string name="data">Data</string>
+    <string name="card">Card</string>
 </resources>

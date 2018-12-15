@@ -47,8 +47,20 @@
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/Theme.AppCompat.Light"
+                app:title=""
                 />
-            
+
+            <ImageButton
+                android:id="@+id/btnView_delete"
+                android:layout_width="38dp"
+                android:layout_height="37dp"
+                android:layout_gravity="top|end"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@android:color/transparent"
+                app:srcCompat="@drawable/delete"
+                android:contentDescription="@string/delete_button" />
+
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
     
@@ -135,7 +147,7 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/addCadastro"
+                android:id="@+id/btnView_salvar"
                 android:text="@string/salvar"
                 android:layout_gravity="bottom|center_horizontal"
                 android:layout_marginTop="22dp"

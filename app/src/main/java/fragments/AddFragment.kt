@@ -41,10 +41,12 @@ import java.util.*
 
 
 class AddFragment : Fragment() {
+
     companion object {
         const val PLACE_PICKER_REQUEST = 1
         const val CHANGE_REMINDER_IMAGE = 2
     }
+
     var mMap: SupportMapFragment? = null
 
     var addImage: ImageView? = null
@@ -62,7 +64,6 @@ class AddFragment : Fragment() {
         editImageButton = view.findViewById(R.id.viewFloatBtn) as FloatingActionButton?
         val reminderText = view.findViewById(R.id.add_reminderText) as EditText
         val reminderTitle = view.findViewById(R.id.add_reminderTittle) as AppCompatEditText
-        val toolbar = view.findViewById(R.id.addToolbar) as Toolbar
         val remindEndDate = view.findViewById(R.id.addDateE_textInputLayout) as? MaskedEditText
         val remindStartDate = view.findViewById(R.id.addDateS_textInputLayout) as? MaskedEditText
         addImage = view.findViewById(R.id.add_imageView) as ImageView
@@ -93,7 +94,6 @@ class AddFragment : Fragment() {
     /**
      * OnResult of addImage button changes image of collapse toolbar
      */
-
     @SuppressLint("SimpleDateFormat")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -104,7 +104,7 @@ class AddFragment : Fragment() {
             val mBitmap: Bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, bitMapURI)
             addImage?.setImageBitmap(mBitmap)
             doAsync {
-                val path = saveToInternalStorage(mBitmap)
+                val path = Utils().saveToInternalStorage(mBitmap, context)
                 uiThread {
                     imageURI = path
                 }
@@ -119,41 +119,41 @@ class AddFragment : Fragment() {
         }
     }
 
-    @SuppressLint("SimpleDateFormat")
-    private fun saveToInternalStorage(bitmapImage:Bitmap?):String {
-        val cw = ContextWrapper(context)
-        // path to /data/data/yourapp/app_data/imageDir
-        val directory = cw.getDir("imageDir", Context.MODE_PRIVATE)
-        // Create imageDir
-        val date: String = SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(Date())
-        val imageName = date.replace("-","")
-                            .replace(":","")
-                            .replace(" ","")
-
-        val mypath = File(directory, imageName)
-        var fos: FileOutputStream? = null
-        try
-        {
-            fos = FileOutputStream(mypath)
-            // Use the compress method on the BitMap object to write image to the OutputStream
-            bitmapImage?.compress(Bitmap.CompressFormat.PNG, 100, fos)
-        }
-        catch (e:Exception) {
-            e.printStackTrace()
-        }
-        finally
-        {
-            try
-            {
-                fos?.close()
-            }
-            catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
-
-        return mypath.absolutePath
-    }
+//    @SuppressLint("SimpleDateFormat")
+//    private fun saveToInternalStorage(bitmapImage:Bitmap?):String {
+//        val cw = ContextWrapper(context)
+//        // path to /data/data/yourapp/app_data/imageDir
+//        val directory = cw.getDir("imageDir", Context.MODE_PRIVATE)
+//        // Create imageDir
+//        val date: String = SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(Date())
+//        val imageName = date.replace("-","")
+//                            .replace(":","")
+//                            .replace(" ","")
+//
+//        val mypath = File(directory, imageName)
+//        var fos: FileOutputStream? = null
+//        try
+//        {
+//            fos = FileOutputStream(mypath)
+//            // Use the compress method on the BitMap object to write image to the OutputStream
+//            bitmapImage?.compress(Bitmap.CompressFormat.PNG, 100, fos)
+//        }
+//        catch (e:Exception) {
+//            e.printStackTrace()
+//        }
+//        finally
+//        {
+//            try
+//            {
+//                fos?.close()
+//            }
+//            catch (e: IOException) {
+//                e.printStackTrace()
+//            }
+//        }
+//
+//        return mypath.absolutePath
+//    }
 
     fun mapConfigs(googleMap: GoogleMap){
         val latLng = LatLng(-8.0556681, -34.951578)
@@ -174,11 +174,12 @@ class AddFragment : Fragment() {
     @SuppressLint("SimpleDateFormat")
     fun addReminder(title: String, text: String, textEndDate: String?, textStartDate: String?, imageUri: String?) {
 
-        val df = SimpleDateFormat("dd/MM/yyyy")
-        df.setLenient(false)
-        Log.d("datas", "final ${textEndDate} inicial ${textStartDate}")
-        val endDate: Date = df.parse(textEndDate)
-        val startDate: Date = df.parse(textStartDate)
+//        val df = SimpleDateFormat("dd/MM/yyyy")
+//        df.setLenient(false)
+//        Log.d("datas", "final ${textEndDate} inicial ${textStartDate}")
+
+        val endDate: Date = Utils().stringToDate(textEndDate)
+        val startDate: Date = Utils().stringToDate(textStartDate)
 
         val rem = Reminder(title = title, text = text, endDate = endDate, beginDate = startDate, image = imageUri, lat = latitude , lon = longitude)
         Log.e("printData", "${endDate} and ${startDate}")
@@ -206,7 +207,7 @@ class AddFragment : Fragment() {
         mMap?.getMapAsync {
             it.addMarker(
                     MarkerOptions().position(latlng)
-                            .title(String.format("Lembre-me ao chegar em: %s", name))
+                            .title(String.format("Lembrete em %s", name))
             ).showInfoWindow()
             it.moveCamera(CameraUpdateFactory.newLatLng(latlng))
             it.setMinZoomPreference(it.minZoomLevel + 17)

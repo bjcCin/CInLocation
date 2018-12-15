@@ -11,7 +11,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import com.wehack.cinlocation.database.ReminderDatabase
 import com.wehack.cinlocation.model.Reminder
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
 import java.io.File
 import java.io.FileInputStream
 import java.util.*
@@ -106,21 +109,50 @@ class Adapter (val mData: List<Reminder>?) : RecyclerView.Adapter<Adapter.myView
 
 
 
-    inner class myViewHolder(itemView: View, val context: Context) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+    inner class myViewHolder(itemView: View, val context: Context) : RecyclerView.ViewHolder(itemView) {
 
         var backgroundImage: ImageView? = null
         var title: TextView? = null
         var location: TextView? = null
+        var deleteButton: ImageButton? = null
+
 
         init {
             title = itemView.findViewById(R.id.card_title)
             location = itemView.findViewById(R.id.card_location)
             backgroundImage = itemView.findViewById(R.id.card_background)
-            itemView.setOnClickListener(this)
-
+            itemView.setOnClickListener{
+                reminderSelected()
+            }
+            deleteButton = itemView.findViewById(R.id.btnHome_delete)
+            deleteButton?.setOnClickListener{
+                deleteReminder()
+            }
         }
 
-        override fun onClick(p0: View?) {
+
+        /**
+         * Delete reminderById on selected trash icon
+         */
+
+        fun deleteReminder(){
+            val pos = adapterPosition
+            doAsync {
+                val dao = ReminderDatabase.getInstance(context)?.reminderDao()
+                dao?.delete(mDataFiltered?.get(pos)!!)
+                val newReminders = dao?.getAll()
+                uiThread {
+                    mDataFiltered = newReminders
+                    notifyDataSetChanged()
+                }
+            }
+        }
+
+        /**
+         * Open edit screen by ReminderId
+         */
+
+        fun reminderSelected() {
             val pos = adapterPosition
             if(pos != RecyclerView.NO_POSITION){
                 val myIntent = Intent(context, EditScreen::class.java)
