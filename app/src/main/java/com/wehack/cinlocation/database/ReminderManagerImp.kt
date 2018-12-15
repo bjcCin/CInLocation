@@ -14,6 +14,14 @@ import com.wehack.cinlocation.model.Reminder
 import com.wehack.cinlocation.service.GeofenceTransitionsIntentService
 import java.util.*
 
+/**
+ * Singleton que gerencia o cadastro de reminders
+ *
+ * @param context da aplicacacao
+ * @property geofencingClient instância do cliente de cadastro de geofences
+ * @property geofenceIntent PendingIntent disparado quando o usuário entra em uma geofence
+ * @property reminders instância do banco de dados
+ */
 class ReminderManagerImp(private val context: Context) : ReminderManager {
     companion object {
         const val GEOFENCE_RADIUS_IN_METERS = 500.toFloat()
@@ -41,15 +49,26 @@ class ReminderManagerImp(private val context: Context) : ReminderManager {
     }
     private val reminders: ReminderDao? = ReminderDatabase.getInstance(context)?.reminderDao()
 
-
+    /**
+     * Busca um reminder por id
+     * @param id do Reminder
+     */
     override fun findById(id: Long): Reminder? {
         return reminders?.findById(id)
     }
 
+    /**
+     * Busca todos os reminder no banco de dados
+     */
     override fun getAll(): List<Reminder>? {
         return reminders?.getAll()
     }
 
+    /**
+     * Insere um novo reminder
+     *
+     * @param reminder a ser inserido
+     */
     override fun insert(reminder: Reminder): Long? {
         val remId = reminders?.insert(reminder)
         val geofence = buildGeofence(reminder)
@@ -57,6 +76,12 @@ class ReminderManagerImp(private val context: Context) : ReminderManager {
         return remId
     }
 
+    /**
+     * Constroi um objeto Geofence a partir dos dados do Reminder
+     *
+     * @param reminder a partir do qual será criado a geofence
+     * @return geofence com os dados do reminder passado
+     */
     fun buildGeofence(reminder: Reminder): Geofence {
         val now = Date().time
         val timeToExpire = now - reminder.endDate?.time!!
@@ -73,14 +98,25 @@ class ReminderManagerImp(private val context: Context) : ReminderManager {
             .build()
     }
 
-    override fun update(reminder: Reminder): Reminder {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    /**
+     * Atualiza um Reminder
+     * @return numero de linhas atualizadas no banco de dados
+     */
+    override fun update(reminder: Reminder): Int? =
+        reminders?.update(reminder)
+
+    /**
+     * Remove um reminder
+     *
+     * @param reminder a ser removido
+     */
+    override fun delete(reminder: Reminder) {
+        reminders?.delete(reminder)
     }
 
-    override fun delete(vararg reminder: Reminder) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
+    /**
+     * Constroi objeto GeofencingRequest
+     */
     private fun buildGeofencingRequest(geofence: Geofence): GeofencingRequest {
         return GeofencingRequest.Builder()
                 .setInitialTrigger(0)
@@ -88,6 +124,11 @@ class ReminderManagerImp(private val context: Context) : ReminderManager {
                 .build()
     }
 
+    /**
+     * Registra uma nova geofence
+     *
+     * @param geofence que se deseja registrar
+     */
     private fun registerGeofencing(geofence: Geofence) {
         if (context.checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             geofencingClient

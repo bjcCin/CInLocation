@@ -9,7 +9,7 @@ interface ReminderManager {
 
     fun insert(reminder: Reminder): Long?
 
-    fun update(reminder: Reminder): Reminder
+    fun update(reminder: Reminder): Int?
 
-    fun delete(vararg reminder: Reminder)
+    fun delete(reminder: Reminder)
 }
