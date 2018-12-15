@@ -78,6 +78,30 @@ class ReminderManagerImp(private val context: Context) : ReminderManager {
     }
 
     /**
+     * Atualiza um Reminder, remove a geofence antiga e insere uma nova.
+     * Isso é necessário porque a API não disponibiliza uma forma de atualizar uma geofence já
+     * registrada
+     *
+     * @return numero de linhas atualizadas no banco de dados
+     */
+    override fun update(reminder: Reminder): Int? {
+        val numberAffectedRows = reminders?.update(reminder)
+        removeGeofence(reminder.id.toString())
+        registerGeofencing(buildGeofence(reminder))
+        return numberAffectedRows
+    }
+
+    /**
+     * Remove um reminder e a geofence associada
+     *
+     * @param reminder a ser removido
+     */
+    override fun delete(reminder: Reminder) {
+        reminders?.delete(reminder)
+        removeGeofence(reminder.id.toString())
+    }
+
+    /**
      * Constroi um objeto Geofence a partir dos dados do Reminder
      *
      * @param reminder a partir do qual será criado a geofence
@@ -97,22 +121,6 @@ class ReminderManagerImp(private val context: Context) : ReminderManager {
             .setExpirationDuration(timeToExpire)
             .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
             .build()
-    }
-
-    /**
-     * Atualiza um Reminder
-     * @return numero de linhas atualizadas no banco de dados
-     */
-    override fun update(reminder: Reminder): Int? =
-        reminders?.update(reminder)
-
-    /**
-     * Remove um reminder
-     *
-     * @param reminder a ser removido
-     */
-    override fun delete(reminder: Reminder) {
-        reminders?.delete(reminder)
     }
 
     /**
@@ -143,5 +151,21 @@ class ReminderManagerImp(private val context: Context) : ReminderManager {
         } else {
             Log.d("__LOCATION", "User needs to grant permission!")
         }
+    }
+
+    /**
+     * Remove a geofence de um reminder
+     *
+     * @param reminder cuja geofence será removida
+     */
+    private fun removeGeofence(reminderId: String) {
+        geofencingClient
+                .removeGeofences(listOf(reminderId))
+                .addOnSuccessListener {
+                    Log.d("__LOCATION", "Geofence removida com sucesso")
+                }
+                .addOnFailureListener {
+                    Log.d("__LOCATION", "Erro ao remover geofence")
+                }
     }
 }

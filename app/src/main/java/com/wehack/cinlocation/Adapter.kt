@@ -3,15 +3,12 @@ package com.wehack.cinlocation
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
-import android.net.Uri
-import android.provider.MediaStore
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import com.wehack.cinlocation.database.ReminderDatabase
+import com.wehack.cinlocation.database.ReminderManagerImp
 import com.wehack.cinlocation.model.Reminder
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
@@ -138,9 +135,10 @@ class Adapter (val mData: List<Reminder>?) : RecyclerView.Adapter<Adapter.myView
         fun deleteReminder(){
             val pos = adapterPosition
             doAsync {
-                val dao = ReminderDatabase.getInstance(context)?.reminderDao()
-                dao?.delete(mDataFiltered?.get(pos)!!)
-                val newReminders = dao?.getAll()
+//                val dao = ReminderDatabase.getInstance(context)?.reminderDao()
+                val reminderManager = ReminderManagerImp.getInstance(context)
+                reminderManager?.delete(mDataFiltered?.get(pos)!!)
+                val newReminders = reminderManager?.getAll()
                 uiThread {
                     mDataFiltered = newReminders
                     notifyDataSetChanged()

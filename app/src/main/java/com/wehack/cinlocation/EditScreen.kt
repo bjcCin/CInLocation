@@ -2,49 +2,35 @@ package com.wehack.cinlocation
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.Fragment
-import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.os.PersistableBundle
+import android.provider.MediaStore
 import android.support.design.widget.FloatingActionButton
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.AppCompatEditText
 import android.support.v7.widget.Toolbar
-import android.util.Log
-import android.view.View
-import com.vicmikhailau.maskededittext.MaskedEditText
-import com.wehack.cinlocation.database.ReminderDatabase
-import com.wehack.cinlocation.model.Reminder
-import kotlinx.android.synthetic.main.edit_screen.*
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.uiThread
-import android.provider.MediaStore.Images.Media.getBitmap
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.net.Uri
-import android.provider.MediaStore
-import android.support.v4.app.FragmentActivity
 import android.view.MenuItem
 import android.widget.*
 import com.google.android.gms.location.places.ui.PlacePicker
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.SupportMapFragment
-import java.text.SimpleDateFormat
 import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
-import fragments.AddFragment
-import fragments.HomeFragment
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+import com.vicmikhailau.maskededittext.MaskedEditText
+import com.wehack.cinlocation.database.ReminderDatabase
+import com.wehack.cinlocation.database.ReminderManagerImp
+import com.wehack.cinlocation.model.Reminder
 import fragments.Utils
+import kotlinx.android.synthetic.main.edit_screen.*
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
 import java.io.File
 import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.IOException
-import java.util.*
+import java.text.SimpleDateFormat
 
 
 class EditScreen() : AppCompatActivity() {
@@ -255,8 +241,8 @@ class EditScreen() : AppCompatActivity() {
     private fun updateReminder(id: Long){
 
         doAsync {
-            val dao = ReminderDatabase.getInstance(applicationContext)?.reminderDao()
-            val rem = dao?.findById(id)
+            val reminderManager = ReminderManagerImp.getInstance(this@EditScreen)
+            val rem = reminderManager?.findById(id)
 
             rem?.lat = latitude
             rem?.lon = longitude
@@ -272,13 +258,13 @@ class EditScreen() : AppCompatActivity() {
             rem?.endDate = Utils().stringToDate(endDate?.text.toString())
 
             if(rem != null){
-                dao.update(rem)
+                reminderManager.update(rem)
                 val intent = Intent(applicationContext, MainActivity::class.java)
                 startActivity(intent)
             }
 
             uiThread {
-                Toast.makeText(applicationContext, "Lembrete salvo com sucesso!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext, "Lembrete alterado com sucesso!", Toast.LENGTH_SHORT).show()
             }
 
         }
