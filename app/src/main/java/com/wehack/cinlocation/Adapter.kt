@@ -63,6 +63,10 @@ class Adapter (val mData: List<Reminder>?) : RecyclerView.Adapter<Adapter.myView
         return 0
     }
 
+    fun removeAt(position: Int) {
+        TODO()
+    }
+
     override fun getFilter(): Filter {
 
        return object : Filter(){
@@ -159,6 +163,5 @@ class Adapter (val mData: List<Reminder>?) : RecyclerView.Adapter<Adapter.myView
             } else
                 Toast.makeText(context, "Erro ao abrir o arquivo", Toast.LENGTH_SHORT).show()
         }
-
     }
 }
