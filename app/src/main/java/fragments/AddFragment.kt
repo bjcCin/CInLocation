@@ -2,8 +2,6 @@ package fragments
 
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
-import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -11,7 +9,6 @@ import android.provider.MediaStore
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
 import android.support.v7.widget.AppCompatEditText
-import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -33,10 +30,6 @@ import com.wehack.cinlocation.database.ReminderManagerImp
 import com.wehack.cinlocation.model.Reminder
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -55,6 +48,7 @@ class AddFragment : Fragment() {
 
     var latitude: Double? = null
     var longitude: Double? = null
+    var placeName: String? = ""
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -181,7 +175,15 @@ class AddFragment : Fragment() {
         val endDate: Date = Utils().stringToDate(textEndDate)
         val startDate: Date = Utils().stringToDate(textStartDate)
 
-        val rem = Reminder(title = title, text = text, endDate = endDate, beginDate = startDate, image = imageUri, lat = latitude , lon = longitude)
+        val rem = Reminder(
+                title = title,
+                text = text,
+                endDate = endDate,
+                beginDate = startDate,
+                image = imageUri,
+                lat = latitude,
+                lon = longitude,
+                placeName = placeName)
         Log.e("printData", "${endDate} and ${startDate}")
 
         doAsync {
@@ -203,11 +205,11 @@ class AddFragment : Fragment() {
         val latlng = place.latLng
         latitude  = place.latLng.latitude
         longitude = place.latLng.longitude
-        val name = place.name
+        placeName = place.name.toString()
         mMap?.getMapAsync {
             it.addMarker(
                     MarkerOptions().position(latlng)
-                            .title(String.format("Lembrete em %s", name))
+                            .title(String.format("Lembrete em %s", placeName))
             ).showInfoWindow()
             it.moveCamera(CameraUpdateFactory.newLatLng(latlng))
             it.setMinZoomPreference(it.minZoomLevel + 17)
