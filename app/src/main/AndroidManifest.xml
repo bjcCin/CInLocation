@@ -8,6 +8,7 @@
     <uses-permission android:name="ACTION_OPEN_DOCUMENT" />
 
     <application
+        android:name=".CInLocationApp"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@drawable/writing"
