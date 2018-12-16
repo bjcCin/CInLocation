@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.provider.MediaStore
 import android.support.design.widget.FloatingActionButton
+import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v7.widget.AppCompatEditText
 import android.util.Log
@@ -33,6 +34,8 @@ import org.jetbrains.anko.uiThread
 import java.util.*
 import com.wehack.cinlocation.util.stringToDate
 import com.wehack.cinlocation.util.saveToInternalStorage
+import com.wehack.cinlocation.util.validation
+import kotlinx.android.synthetic.main.fragment_add.*
 
 
 class AddFragment : Fragment() {
@@ -115,6 +118,12 @@ class AddFragment : Fragment() {
         }
     }
 
+
+    /**
+     * Set map configurations
+     *
+     * @param googleMap do framelayout que contém o map
+     */
     fun mapConfigs(googleMap: GoogleMap){
         val latLng = LatLng(-8.0556681, -34.951578)
         googleMap.addMarker(MarkerOptions().position(latLng)
@@ -131,15 +140,21 @@ class AddFragment : Fragment() {
 
     }
 
+
+    /**
+     * Cadastra um reminder no app
+     *
+     * @param title titulo a ser salvo
+     * @param text texto do lembrete
+     * @param textStartDate data inicial
+     * @param textEndDate data final
+     * @param imageUri local da imagem
+     */
     @SuppressLint("SimpleDateFormat")
     fun addReminder(title: String, text: String, textEndDate: String?, textStartDate: String?, imageUri: String?) {
 
-//        val df = SimpleDateFormat("dd/MM/yyyy")
-//        df.setLenient(false)
-//        Log.d("datas", "final ${textEndDate} inicial ${textStartDate}")
-
-        val endDate: Date = stringToDate(textEndDate)
-        val startDate: Date = stringToDate(textStartDate)
+        val endDate: Date? = stringToDate(textEndDate)
+        val startDate: Date? = stringToDate(textStartDate)
 
         val rem = Reminder(
                 title = title,
@@ -150,21 +165,31 @@ class AddFragment : Fragment() {
                 lat = latitude,
                 lon = longitude,
                 placeName = placeName)
-        Log.e("printData", "${endDate} and ${startDate}")
 
-        doAsync {
-            ReminderManagerImp
-                    .getInstance(context!!)
-                    ?.insert(rem)
-            uiThread {
-                val intent = Intent(context, MainActivity::class.java)
-                startActivity(intent)
+        val isValid = validation(rem)
+
+        if(isValid == "ok"){
+            doAsync {
+                ReminderManagerImp
+                        .getInstance(context!!)
+                        ?.insert(rem)
+                uiThread {
+                    val intent = Intent(context, MainActivity::class.java)
+                    startActivity(intent)
+                }
+
             }
-
         }
+
+        Snackbar.make(newReminderFragment, isValid, Snackbar.LENGTH_SHORT).show()
+
     }
 
-
+    /**
+     * Faz o upload da localizacao do lembrete
+     *
+     * @param data vem do startActivityfromResult
+     */
     private fun updateMapLocation(data: Intent?) {
         val place = PlacePicker.getPlace(this.context, data)
 

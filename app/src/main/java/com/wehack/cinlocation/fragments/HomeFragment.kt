@@ -29,17 +29,11 @@ class HomeFragment : Fragment() {
         doAsync {
 
             val dao = ReminderDatabase.getInstance(context!!)?.reminderDao()
-            reminderList = dao?.getAll()
-            val noCompletedReminderList: ArrayList<Reminder> = ArrayList()
-
-            reminderList?.forEach {
-                if (!it.completed)
-                    noCompletedReminderList.add(it)
-            }
+            reminderList = dao?.getAll()?.filter { !it.completed }
 
             uiThread {
 
-                adapter = Adapter(noCompletedReminderList, true)
+                adapter = Adapter(reminderList, true)
                 val recyclerView: RecyclerView = inflate.findViewById(R.id.rv_list)
                 recyclerView.adapter = adapter
                 recyclerView.layoutManager = LinearLayoutManager(context)

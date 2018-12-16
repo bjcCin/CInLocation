@@ -17,6 +17,7 @@ import com.wehack.cinlocation.model.Reminder
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -64,6 +65,12 @@ fun sendNotification(context: Context, message: String, content: String="") {
 
 private fun getUniqueId() = ((System.currentTimeMillis() % 10000).toInt())
 
+
+/**
+ * Salva uma imagem na pasta privada do APP
+ *
+ * @param bitmapImage que da imagem que deseja salvar
+ */
 @SuppressLint("SimpleDateFormat")
 fun saveToInternalStorage(bitmapImage: Bitmap?, context: Context?):String {
     val cw = ContextWrapper(context)
@@ -100,11 +107,25 @@ fun saveToInternalStorage(bitmapImage: Bitmap?, context: Context?):String {
     return mypath.absolutePath
 }
 
-fun stringToDate(text: String?): Date{
+/**
+ * Converte uma string em uma data válida
+ *
+ * @param text data que será convertida
+ */
+@SuppressLint("SimpleDateFormat")
+fun stringToDate(text: String?): Date?{
 
     val df = SimpleDateFormat("dd/MM/yyyy")
     df.setLenient(false)
-    val date: Date = df.parse(text)
+
+    var date: Date? = null
+    if(text != ""){
+        try {
+            date = df.parse(text)
+        } catch (pe:ParseException){
+            date = null
+        }
+    }
 
     return date
 }
@@ -117,6 +138,18 @@ fun fail(message: String = ""): Nothing {
     throw Exception(message)
 }
 
-fun validation(reminder: Reminder){
+/**
+ * Valida se os campos do reminder
+ *
+ * @param reminder à validar
+ */
+fun validation(reminder: Reminder): String{
 
+    if(reminder.title == "") return "Titulo não deve está vazio"
+    if(reminder.text == "") return "Lembrete vazio"
+    if(reminder.endDate == null) return "Data final inválida"
+    if(reminder.beginDate == null) return "Data inicial inválida"
+    if(reminder.endDate?.compareTo(reminder.beginDate)!! > 0) return "Data final não deve ser maior que a inicial"
+
+    return "ok"
 }

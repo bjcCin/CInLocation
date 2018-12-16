@@ -26,20 +26,15 @@ class ProfileFragment: Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
 
-        var reminderList: List<Reminder>? = ArrayList()
+        var reminderList: List<Reminder>?
 
         doAsync {
             val dao = ReminderDatabase.getInstance(context!!)?.reminderDao()
 
-            reminderList = dao?.getAll()
-            val completedReminderList: ArrayList<Reminder> = ArrayList()
+            reminderList = dao?.getAll()?.filter { it.completed }
 
-            reminderList?.forEach {
-                if (it.completed)
-                    completedReminderList.add(it)
-            }
             uiThread {
-                adapter = Adapter(completedReminderList, false)
+                adapter = Adapter(reminderList, false)
                 val recyclerView: RecyclerView = view.findViewById(R.id.rv2_list)
                 recyclerView.adapter = adapter
                 recyclerView.layoutManager = LinearLayoutManager(context)
@@ -47,32 +42,7 @@ class ProfileFragment: Fragment() {
             }
         }
 
-
-//        val deleteButton = view.findViewById(R.id.profile_button) as Button
-//
-//        deleteButton.setOnClickListener {
-//            deleteAllReminders()
-//        }
-
         return view
     }
 
-    fun deleteAllReminders(){
-
-        doAsync {
-            val dao = ReminderDatabase.getInstance(context!!)?.reminderDao()
-            val listReminders = dao?.getAll()
-
-            if (listReminders != null) {
-                for (reminder:Reminder in listReminders){
-                    dao.delete(reminder)
-                }
-            }
-
-            uiThread {
-                Toast.makeText(context, "Todos os reminders apagados", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-    }
 }

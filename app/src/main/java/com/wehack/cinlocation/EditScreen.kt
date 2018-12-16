@@ -133,6 +133,7 @@ class EditScreen() : AppCompatActivity() {
 
     /**
      * Loading Reminder by reminder Id and set screen data
+     * @param id id of reminder to edit
      */
     @SuppressLint("SimpleDateFormat")
     fun getReminderbyReminderId(id: Long){
@@ -219,7 +220,9 @@ class EditScreen() : AppCompatActivity() {
 
 
     /**
-     * From result edit map location
+     * Update map lat/long
+     * @data from result edit map location
+     *
      */
     private fun updateMapLocation(data: Intent?) {
         val place = PlacePicker.getPlace(this, data)
@@ -239,6 +242,10 @@ class EditScreen() : AppCompatActivity() {
     }
 
 
+    /**
+     * Update reminder in database
+     * @param id id of reminder to update
+     */
     private fun updateReminder(id: Long){
 
         doAsync {
@@ -249,6 +256,7 @@ class EditScreen() : AppCompatActivity() {
             rem?.lon = longitude
             rem?.title = title?.text.toString()
             rem?.text = editText?.text.toString()
+            rem?.completed = false
 
             if (imageURI == null)
                 rem?.image = reminderSelected?.image
