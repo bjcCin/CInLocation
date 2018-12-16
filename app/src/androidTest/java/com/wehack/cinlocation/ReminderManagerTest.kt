@@ -10,7 +10,7 @@ import org.junit.runner.RunWith
 import java.util.*
 
 /**
- * Instrumented test, which will execute on an Android device.
+ * Testes.
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
@@ -18,11 +18,12 @@ import java.util.*
 class ReminderManagerTest {
     companion object {
         const val REMINDER_TITLE = "This is indeed a test"
-        const val ONE_MINUTE = 60 * 1000
+        const val NEW_REMINDER_TITLE = "This is an updated title"
+        const val FIVE_MINUTES = 5 * 60 * 1000
     }
 
     @Test
-    fun databaseInsertion() {
+    fun testDBInsertion() {
         val appContext = InstrumentationRegistry.getTargetContext()
         val remManager= ReminderManagerImp.getInstance(appContext)
         val rem = buildFakeReminder()
@@ -35,6 +36,34 @@ class ReminderManagerTest {
         }
     }
 
+    @Test
+    fun testDBDeletion() {
+        val appContext = InstrumentationRegistry.getTargetContext()
+        val remMgr = ReminderManagerImp.getInstance(appContext)
+        val rem = buildFakeReminder()
+        val id = remMgr?.insert(rem)
+        rem.id = id
+        remMgr?.delete(rem)
+        val newRem = remMgr?.findById(id!!)
+        assert(newRem == null)
+    }
+
+    @Test
+    fun testDBUpdate() {
+        val appContext = InstrumentationRegistry.getTargetContext()
+        val remMgr = ReminderManagerImp.getInstance(appContext)
+        val rem = buildFakeReminder()
+        remMgr?.insert(rem)
+        rem.title = NEW_REMINDER_TITLE
+        remMgr?.update(rem)
+        val newRem = remMgr?.findById(rem.id!!)
+        if (newRem != null) {
+            assert(newRem?.title == NEW_REMINDER_TITLE)
+        } else {
+            assert(false)
+        }
+    }
+
     private fun buildFakeReminder(): Reminder {
         return Reminder(
                 title = REMINDER_TITLE,
@@ -42,7 +71,7 @@ class ReminderManagerTest {
                 lat = 0.0,
                 lon = 0.0,
                 beginDate = Date(SystemClock.elapsedRealtime()),
-                endDate = Date(SystemClock.elapsedRealtime() + ONE_MINUTE),
+                endDate = Date(SystemClock.elapsedRealtime() + FIVE_MINUTES),
                 completed= false,
                 image = null,
                 placeName = "Fake place"
