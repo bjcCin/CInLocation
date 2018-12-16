@@ -179,9 +179,9 @@ class AddFragment : Fragment() {
                 }
 
             }
-        }
+        } else
+            Snackbar.make(newReminderFragment, isValid, Snackbar.LENGTH_SHORT).show()
 
-        Snackbar.make(newReminderFragment, isValid, Snackbar.LENGTH_SHORT).show()
 
     }
 

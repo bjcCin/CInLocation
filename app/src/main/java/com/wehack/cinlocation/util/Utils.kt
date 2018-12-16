@@ -149,7 +149,7 @@ fun validation(reminder: Reminder): String{
     if(reminder.text == "") return "Lembrete vazio"
     if(reminder.endDate == null) return "Data final inválida"
     if(reminder.beginDate == null) return "Data inicial inválida"
-    if(reminder.endDate?.compareTo(reminder.beginDate)!! > 0) return "Data final não deve ser maior que a inicial"
+    if(reminder.endDate?.compareTo(reminder.beginDate)!! < 0) return "Data final deve ser maior que a inicial"
 
     return "ok"
 }
