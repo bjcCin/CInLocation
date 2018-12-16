@@ -1,5 +1,6 @@
 package com.wehack.cinlocation.database
 
+import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -11,6 +12,7 @@ import com.google.android.gms.location.GeofencingRequest
 import com.google.android.gms.location.LocationServices
 import com.wehack.cinlocation.database.dao.ReminderDao
 import com.wehack.cinlocation.model.Reminder
+import com.wehack.cinlocation.service.AlarmService
 import com.wehack.cinlocation.service.GeofenceTransitionsIntentService
 import java.util.*
 
@@ -19,8 +21,9 @@ import java.util.*
  *
  * @param context da aplicacacao
  * @property geofencingClient instância do cliente de cadastro de geofences
- * @property geofenceIntent PendingIntent disparado quando o usuário entra em uma geofence
+ * @property geofencePendingIntent PendingIntent disparado quando o usuário entra em uma geofence
  * @property reminders instância do banco de dados
+ * @property alarmManager agenda registro de lembretes quando necessário
  */
 class ReminderManagerImp(private val context: Context) : ReminderManager {
     companion object {
@@ -38,7 +41,7 @@ class ReminderManagerImp(private val context: Context) : ReminderManager {
     }
 
     private val geofencingClient: GeofencingClient = LocationServices.getGeofencingClient(context)
-    private val geofenceIntent: PendingIntent by lazy {
+    private val geofencePendingIntent: PendingIntent by lazy {
         val intent = Intent(context, GeofenceTransitionsIntentService::class.java)
         PendingIntent
                 .getService(
@@ -48,6 +51,7 @@ class ReminderManagerImp(private val context: Context) : ReminderManager {
                         PendingIntent.FLAG_UPDATE_CURRENT)
     }
     private val reminders: ReminderDao? = ReminderDatabase.getInstance(context)?.reminderDao()
+    private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     /**
      * Busca um reminder por id
@@ -72,8 +76,15 @@ class ReminderManagerImp(private val context: Context) : ReminderManager {
     override fun insert(reminder: Reminder): Long? {
         val remId = reminders?.insert(reminder)
         reminder.id = remId
-        val geofence = buildGeofence(reminder)
-        registerGeofencing(geofence)
+        if (reminder.beginDate != null) {
+            val now = Date().time
+            val beginDate = reminder.beginDate?.time!!
+            if (beginDate > now) {
+                scheduleReminder(reminder)
+                return remId
+            }
+        }
+        registerGeofencing(buildGeofence(reminder))
         return remId
     }
 
@@ -141,7 +152,7 @@ class ReminderManagerImp(private val context: Context) : ReminderManager {
     private fun registerGeofencing(geofence: Geofence) {
         if (context.checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             geofencingClient
-                    .addGeofences(buildGeofencingRequest(geofence), geofenceIntent)
+                    .addGeofences(buildGeofencingRequest(geofence), geofencePendingIntent)
                     .addOnSuccessListener {
                         Log.d("__LOCATION", "Geofence created!")
                     }
@@ -167,5 +178,24 @@ class ReminderManagerImp(private val context: Context) : ReminderManager {
                 .addOnFailureListener {
                     Log.d("__LOCATION", "Erro ao remover geofence")
                 }
+    }
+
+    /**
+     * Agenda o registro da geofence no modo RTC que não desperta o dispositivo
+     * e apenas executa a tarefa em background silenciosamente
+     *
+     * @param reminder que será agendado
+     */
+    private fun scheduleReminder(reminder: Reminder) {
+        val pendingIntent = Intent(context, AlarmService::class.java).let { intent ->
+            intent.putExtra("reminderId", reminder.id)
+            PendingIntent.getBroadcast(context, 0, intent, 0)
+        }
+        val beginDateMili = reminder.beginDate?.time!!
+        alarmManager.set(
+                AlarmManager.RTC,
+                beginDateMili,
+                pendingIntent
+        )
     }
 }
