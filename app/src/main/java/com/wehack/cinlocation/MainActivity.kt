@@ -23,6 +23,7 @@ import com.wehack.cinlocation.fragments.ProfileFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import android.widget.Toast
 import com.wehack.cinlocation.R.id.action_sortby
+import org.jetbrains.anko.doAsync
 
 
 class MainActivity : AppCompatActivity(),
@@ -90,25 +91,29 @@ class MainActivity : AppCompatActivity(),
         searchMenuItem = menuToolbar?.findItem(action_search)
         sortMenuItem = menuToolbar?.findItem(action_sortby)
 
+        doAsync {
+
         val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
         searchView = menu?.findItem(R.id.action_search)?.actionView as SearchView
         searchView!!.setSearchableInfo(searchManager.getSearchableInfo(componentName))
         searchView!!.setMaxWidth(Integer.MAX_VALUE)
 
-        // mudança de texto da query
-        searchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String): Boolean {
-                // envio da consulta
-                fragment_home.makeQuery(query)
-                return false
-            }
 
-            override fun onQueryTextChange(query: String): Boolean {
-                // mudanca do texto
-                fragment_home.makeQuery(query)
-                return false
-            }
-        })
+            // mudança de texto da query
+            searchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String): Boolean {
+                    // envio da consulta
+                    fragment_home.makeQuery(query)
+                    return false
+                }
+
+                override fun onQueryTextChange(query: String): Boolean {
+                    // mudanca do texto
+                    fragment_home.makeQuery(query)
+                    return false
+                }
+            })
+        }
 
         return true
     }

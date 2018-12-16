@@ -53,7 +53,7 @@ class Adapter (val mData: List<Reminder>?, val isFromHome: Boolean) : RecyclerVi
             holder.backgroundImage?.setImageResource(R.drawable.sem_foto)
         }
 
-        holder.date?.setText(mDataFiltered?.get(position)!!.beginDate.toString())
+        holder.date?.setText(mDataFiltered?.get(position)!!.beginDate?.toLocaleString())
         holder.title?.setText(mDataFiltered?.get(position)!!.title)
         holder.location?.setText(mDataFiltered?.get(position)!!.placeName)
 
@@ -165,7 +165,6 @@ class Adapter (val mData: List<Reminder>?, val isFromHome: Boolean) : RecyclerVi
         /**
          * Delete reminderById on selected trash icon
          */
-
         fun deleteReminder(){
             val pos = adapterPosition
             doAsync {
