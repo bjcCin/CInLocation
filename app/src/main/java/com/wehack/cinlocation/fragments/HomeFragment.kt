@@ -1,4 +1,4 @@
-package fragments
+package com.wehack.cinlocation.fragments
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -27,25 +27,19 @@ class HomeFragment : Fragment() {
 
         var reminderList: List<Reminder>? = ArrayList()
         doAsync {
-            val dao = ReminderDatabase.getInstance(context!!)?.reminderDao()
-            val long: Long = 3
-           // dao?.getAll()?.forEach { dao.delete(it) }
 
-//            val reminder: Reminder = dao?.findById(long)!!
-            reminderList = dao?.getAll()
+            val dao = ReminderDatabase.getInstance(context!!)?.reminderDao()
+            reminderList = dao?.getAll()?.filter { !it.completed }
 
             uiThread {
-                for (reminder:Reminder in reminderList!!){
-                    Log.i("imagemID", reminder.image.toString())
-                }
 
-                adapter = Adapter(reminderList)
+                adapter = Adapter(reminderList, true)
                 val recyclerView: RecyclerView = inflate.findViewById(R.id.rv_list)
                 recyclerView.adapter = adapter
                 recyclerView.layoutManager = LinearLayoutManager(context)
                 val swipeHandler = object : SwipableItemCallback(context!!) {
                     override fun onSwiped(viewHolder: RecyclerView.ViewHolder?, direction: Int) {
-                        adapter?.removeAt(viewHolder?.adapterPosition!!)
+                        adapter?.removeAt(viewHolder?.adapterPosition!!, context!!)
                     }
                 }
                 val itemTouchHelper = ItemTouchHelper(swipeHandler)

@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import com.wehack.cinlocation.database.ReminderDatabase
 import com.wehack.cinlocation.database.ReminderManagerImp
 import com.wehack.cinlocation.model.Reminder
 import org.jetbrains.anko.doAsync
@@ -15,10 +16,11 @@ import org.jetbrains.anko.uiThread
 import java.io.File
 import java.io.FileInputStream
 import java.util.*
+import kotlin.collections.ArrayList
 
-class Adapter (val mData: List<Reminder>?) : RecyclerView.Adapter<Adapter.myViewHolder>(), Filterable  {
+class Adapter (val mData: List<Reminder>?, val isFromHome: Boolean) : RecyclerView.Adapter<Adapter.myViewHolder>(), Filterable  {
 
-    var mDataFiltered: List<Reminder>? = null
+    var mDataFiltered: List<Reminder>?
     var imagens: ArrayList<Int> = ArrayList()
 
 
@@ -28,7 +30,6 @@ class Adapter (val mData: List<Reminder>?) : RecyclerView.Adapter<Adapter.myView
         imagens.add(R.drawable.cin_ufpe)
         imagens.add(R.drawable.conde_boa_vista)
         imagens.add(R.drawable.marco_zero)
-
     }
 
 
@@ -52,8 +53,9 @@ class Adapter (val mData: List<Reminder>?) : RecyclerView.Adapter<Adapter.myView
             holder.backgroundImage?.setImageResource(R.drawable.sem_foto)
         }
 
+        holder.date?.setText(mDataFiltered?.get(position)!!.beginDate.toString())
         holder.title?.setText(mDataFiltered?.get(position)!!.title)
-        holder.location?.setText(mDataFiltered?.get(position)!!.text)
+        holder.location?.setText(mDataFiltered?.get(position)!!.placeName)
 
     }
 
@@ -61,10 +63,6 @@ class Adapter (val mData: List<Reminder>?) : RecyclerView.Adapter<Adapter.myView
         if (mDataFiltered != null)
             return mDataFiltered!!.size
         return 0
-    }
-
-    fun removeAt(position: Int) {
-        TODO()
     }
 
     override fun getFilter(): Filter {
@@ -108,6 +106,30 @@ class Adapter (val mData: List<Reminder>?) : RecyclerView.Adapter<Adapter.myView
         notifyDataSetChanged()
     }
 
+    /**
+     * Make reminder completed and remove from adapter
+     */
+    fun removeAt(position: Int, context: Context) {
+
+        val toMarkCompleted = mDataFiltered?.get(position)
+
+        doAsync {
+            val dao = ReminderDatabase.getInstance(context)?.reminderDao()
+            toMarkCompleted?.completed = true
+            if (toMarkCompleted != null){
+                dao?.update(toMarkCompleted)
+            }
+            val reminders = dao?.getAll()
+            uiThread {
+
+                val arrayListReminders = ArrayList(mDataFiltered)
+                arrayListReminders.removeAt(position)
+                mDataFiltered = arrayListReminders.toList()
+                notifyDataSetChanged()
+            }
+        }
+
+    }
 
 
     inner class myViewHolder(itemView: View, val context: Context) : RecyclerView.ViewHolder(itemView) {
@@ -116,6 +138,7 @@ class Adapter (val mData: List<Reminder>?) : RecyclerView.Adapter<Adapter.myView
         var title: TextView? = null
         var location: TextView? = null
         var deleteButton: ImageButton? = null
+        var date: TextView? = null
 
 
         init {
@@ -125,9 +148,16 @@ class Adapter (val mData: List<Reminder>?) : RecyclerView.Adapter<Adapter.myView
             itemView.setOnClickListener{
                 reminderSelected()
             }
-            deleteButton = itemView.findViewById(R.id.btnHome_delete)
-            deleteButton?.setOnClickListener{
-                deleteReminder()
+
+            date = itemView.findViewById(R.id.card_date)
+
+            if(!isFromHome){
+                deleteButton = itemView.findViewById(R.id.btnHome_delete)
+                deleteButton?.visibility = View.VISIBLE
+                deleteButton?.setOnClickListener{
+                    deleteReminder()
+                }
+
             }
         }
 
@@ -139,10 +169,9 @@ class Adapter (val mData: List<Reminder>?) : RecyclerView.Adapter<Adapter.myView
         fun deleteReminder(){
             val pos = adapterPosition
             doAsync {
-//                val dao = ReminderDatabase.getInstance(context)?.reminderDao()
                 val reminderManager = ReminderManagerImp.getInstance(context)
                 reminderManager?.delete(mDataFiltered?.get(pos)!!)
-                val newReminders = reminderManager?.getAll()
+                val newReminders = reminderManager?.getAll()?.filter { it.completed }
                 uiThread {
                     mDataFiltered = newReminders
                     notifyDataSetChanged()
@@ -153,7 +182,6 @@ class Adapter (val mData: List<Reminder>?) : RecyclerView.Adapter<Adapter.myView
         /**
          * Open edit screen by ReminderId
          */
-
         fun reminderSelected() {
             val pos = adapterPosition
             if(pos != RecyclerView.NO_POSITION){

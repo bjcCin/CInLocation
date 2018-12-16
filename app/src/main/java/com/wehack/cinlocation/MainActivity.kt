@@ -17,9 +17,9 @@ import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import com.wehack.cinlocation.R.id.action_search
-import fragments.AddFragment
-import fragments.HomeFragment
-import fragments.ProfileFragment
+import com.wehack.cinlocation.fragments.AddFragment
+import com.wehack.cinlocation.fragments.HomeFragment
+import com.wehack.cinlocation.fragments.ProfileFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import android.widget.Toast
 import com.wehack.cinlocation.R.id.action_sortby
@@ -172,6 +172,7 @@ class MainActivity : AppCompatActivity(),
                 addFragment(fragment)
                 return true
             }
+
             R.id.nav_add -> {
                 val fragment = AddFragment()
                 searchMenuItem?.setVisible(false)
@@ -179,12 +180,13 @@ class MainActivity : AppCompatActivity(),
                 addFragment(fragment)
                 return true
             }
-//            R.id.nav_profile -> {
-//                val fragment = ProfileFragment()
-//                searchMenuItem?.setVisible(false)
-//                addFragment(fragment)
-//                return true
-//            }
+
+            R.id.nav_profile -> {
+                val fragment = ProfileFragment()
+                searchMenuItem?.setVisible(false)
+                addFragment(fragment)
+                return true
+            }
         }
 
         return false
