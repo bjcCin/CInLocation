@@ -98,7 +98,9 @@ class ReminderManagerImp(private val context: Context) : ReminderManager {
     override fun update(reminder: Reminder): Int? {
         val numberAffectedRows = reminders?.update(reminder)
         removeGeofence(reminder.id.toString())
-        registerGeofencing(buildGeofence(reminder))
+        if (!reminder.completed) {
+            registerGeofencing(buildGeofence(reminder))
+        }
         return numberAffectedRows
     }
 

@@ -27,6 +27,10 @@ class GeofenceTransitionsIntentService : IntentService("GefenceService") {
         val reminder = ReminderManagerImp
                 .getInstance(this)
                 ?.findById(geofence.requestId.toLong())
+        reminder?.completed = true
+        ReminderManagerImp
+                .getInstance(this)
+                ?.update(reminder!!)
 
         sendNotification(
                 this,
