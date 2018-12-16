@@ -13,6 +13,7 @@ import android.support.v4.app.TaskStackBuilder
 import com.wehack.cinlocation.BuildConfig
 import com.wehack.cinlocation.MainActivity
 import com.wehack.cinlocation.R
+import com.wehack.cinlocation.model.Reminder
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -21,6 +22,13 @@ import java.util.*
 
 private val NOTIFICATION_CHANNEL_ID = BuildConfig.APPLICATION_ID + ".channel"
 
+/**
+ * Dispara uma notificação
+ *
+ * @param context da aplicação
+ * @param message titulo da notificação
+ * @param content texto da notificação
+ */
 fun sendNotification(context: Context, message: String, content: String="") {
     val notificationManager = context
             .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -55,7 +63,6 @@ fun sendNotification(context: Context, message: String, content: String="") {
 }
 
 private fun getUniqueId() = ((System.currentTimeMillis() % 10000).toInt())
-
 
 @SuppressLint("SimpleDateFormat")
 fun saveToInternalStorage(bitmapImage: Bitmap?, context: Context?):String {
@@ -100,4 +107,16 @@ fun stringToDate(text: String?): Date{
     val date: Date = df.parse(text)
 
     return date
+}
+/**
+ * Lança uma exceção com uma mensagem
+ *
+ * @param message da exceção
+ */
+fun fail(message: String = ""): Nothing {
+    throw Exception(message)
+}
+
+fun validation(reminder: Reminder){
+
 }

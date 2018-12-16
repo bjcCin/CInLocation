@@ -81,6 +81,8 @@
         android:background="@android:color/transparent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/delete"
-        tools:layout_editor_absoluteY="0dp" />
+        tools:layout_editor_absoluteY="0dp"
+        android:visibility="invisible"
+        />
 
 </android.support.constraint.ConstraintLayout>

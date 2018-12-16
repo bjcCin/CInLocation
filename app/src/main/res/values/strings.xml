@@ -20,4 +20,6 @@
     <string name="delete_button">Delete button</string>
     <string name="data">Data</string>
     <string name="card">Card</string>
+    <string name="titulo_notificacao">Novo lembrete para esta localização</string>
+    <string name="completadas">Completadas</string>
 </resources>

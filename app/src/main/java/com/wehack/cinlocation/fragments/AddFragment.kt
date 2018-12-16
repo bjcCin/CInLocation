@@ -1,9 +1,7 @@
-package fragments
+package com.wehack.cinlocation.fragments
 
 import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
-import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -11,7 +9,6 @@ import android.provider.MediaStore
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
 import android.support.v7.widget.AppCompatEditText
-import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -33,11 +30,9 @@ import com.wehack.cinlocation.database.ReminderManagerImp
 import com.wehack.cinlocation.model.Reminder
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.text.SimpleDateFormat
 import java.util.*
+import com.wehack.cinlocation.util.stringToDate
+import com.wehack.cinlocation.util.saveToInternalStorage
 
 
 class AddFragment : Fragment() {
@@ -55,6 +50,7 @@ class AddFragment : Fragment() {
 
     var latitude: Double? = null
     var longitude: Double? = null
+    var placeName: String? = ""
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -104,7 +100,7 @@ class AddFragment : Fragment() {
             val mBitmap: Bitmap = MediaStore.Images.Media.getBitmap(context?.contentResolver, bitMapURI)
             addImage?.setImageBitmap(mBitmap)
             doAsync {
-                val path = Utils().saveToInternalStorage(mBitmap, context)
+                val path = saveToInternalStorage(mBitmap, context)
                 uiThread {
                     imageURI = path
                 }
@@ -118,42 +114,6 @@ class AddFragment : Fragment() {
             }
         }
     }
-
-//    @SuppressLint("SimpleDateFormat")
-//    private fun saveToInternalStorage(bitmapImage:Bitmap?):String {
-//        val cw = ContextWrapper(context)
-//        // path to /data/data/yourapp/app_data/imageDir
-//        val directory = cw.getDir("imageDir", Context.MODE_PRIVATE)
-//        // Create imageDir
-//        val date: String = SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(Date())
-//        val imageName = date.replace("-","")
-//                            .replace(":","")
-//                            .replace(" ","")
-//
-//        val mypath = File(directory, imageName)
-//        var fos: FileOutputStream? = null
-//        try
-//        {
-//            fos = FileOutputStream(mypath)
-//            // Use the compress method on the BitMap object to write image to the OutputStream
-//            bitmapImage?.compress(Bitmap.CompressFormat.PNG, 100, fos)
-//        }
-//        catch (e:Exception) {
-//            e.printStackTrace()
-//        }
-//        finally
-//        {
-//            try
-//            {
-//                fos?.close()
-//            }
-//            catch (e: IOException) {
-//                e.printStackTrace()
-//            }
-//        }
-//
-//        return mypath.absolutePath
-//    }
 
     fun mapConfigs(googleMap: GoogleMap){
         val latLng = LatLng(-8.0556681, -34.951578)
@@ -178,10 +138,18 @@ class AddFragment : Fragment() {
 //        df.setLenient(false)
 //        Log.d("datas", "final ${textEndDate} inicial ${textStartDate}")
 
-        val endDate: Date = Utils().stringToDate(textEndDate)
-        val startDate: Date = Utils().stringToDate(textStartDate)
+        val endDate: Date = stringToDate(textEndDate)
+        val startDate: Date = stringToDate(textStartDate)
 
-        val rem = Reminder(title = title, text = text, endDate = endDate, beginDate = startDate, image = imageUri, lat = latitude , lon = longitude)
+        val rem = Reminder(
+                title = title,
+                text = text,
+                endDate = endDate,
+                beginDate = startDate,
+                image = imageUri,
+                lat = latitude,
+                lon = longitude,
+                placeName = placeName)
         Log.e("printData", "${endDate} and ${startDate}")
 
         doAsync {
@@ -203,11 +171,11 @@ class AddFragment : Fragment() {
         val latlng = place.latLng
         latitude  = place.latLng.latitude
         longitude = place.latLng.longitude
-        val name = place.name
+        placeName = place.name.toString()
         mMap?.getMapAsync {
             it.addMarker(
                     MarkerOptions().position(latlng)
-                            .title(String.format("Lembrete em %s", name))
+                            .title(String.format("Lembrete em %s", placeName))
             ).showInfoWindow()
             it.moveCamera(CameraUpdateFactory.newLatLng(latlng))
             it.setMinZoomPreference(it.minZoomLevel + 17)
