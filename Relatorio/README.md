@@ -25,6 +25,26 @@ Seguindo o padrão de utilização da recomendado na pela biblioteca room implem
 
 ![DAO](imagens/dao.png)
 
+## Implementação
+### Front-end
+
+Utilizando o Material Design do Android, alguns bons padrões de UX/UI foram aplicados ao CInLocation.
+
+1. Resolvemos utilizar fragmentos combinados ao Bottom Navigation para um maior poder de reaproveitamento do código, utilizando a metodologia DRY (don't repeat yourself), e também uma boa organização da interface do usuário.
+
+![DAO](imagens/fragments.JPG)
+
+![DAO](imagens/fragments.gif)
+
+2. Outro bom padrão utilizado foi o Collapse Toolbar Layout, que é uma das coisas mais incríveis da biblioteca de suporte de design do android e facilita muito a compreensão da screen como um todo para o usuário.
+
+![DAO](imagens/collapse.gif)
+
+ 3.	Também adotamos a opção de swipe para marcar um reminder como completo, deixando a tela de home bem mais intuitiva e melhorando a experiência do usuário.
+ 
+![DAO](imagens/swipe2.gif)
+
+
 ## Boas práticas
 
 Comentários foram utilizados seguindo a recomendação do [padrão de documentação em Kotlin](https://kotlinlang.org/docs/reference/kotlin-doc.html):
