@@ -1,4 +1,4 @@
-![CInLocation](https://github.com/bjcCin/CInLocation/blob/master/imagens/logo.jpg?raw=true)
+![CInLocation](imagens/logo.jpg)
 # Testes
 
 Como adicional, alguns testes foram escritos para assegurar que o cadastro dos lembretes no banco estavam funcionando da forma adequada:
